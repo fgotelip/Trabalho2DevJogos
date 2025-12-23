@@ -1,16 +1,18 @@
 [gd_scene load_steps=4 format=3 uid="uid://bdr8rknjykjcl"]
 
-[ext_resource type="Script" uid="uid://bu7sgm2ajeace" path="res://scripts/main.gd" id="1_b30p5"]
 [ext_resource type="PackedScene" uid="uid://pev4yk0p47kx" path="res://cenas/base.tscn" id="1_t4ukd"]
 [ext_resource type="Script" uid="uid://d2kmfr35dpbxb" path="res://scripts/camera_2d.gd" id="3_4fhxt"]
+[ext_resource type="PackedScene" uid="uid://do6iywov6k38k" path="res://cenas/inimigo.tscn" id="3_b30p5"]
 
 [node name="main" type="Node2D"]
-script = ExtResource("1_b30p5")
 
 [node name="Base" parent="." instance=ExtResource("1_t4ukd")]
-position = Vector2(157, 163)
+position = Vector2(-18, -9)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 script = ExtResource("3_4fhxt")
 velocidade = 500.0
+
+[node name="Inimigo" parent="." instance=ExtResource("3_b30p5")]
+position = Vector2(-615, 147)

@@ -11,7 +11,6 @@ func _ready(): # assim que a instacia do objeto é criada ele é executado
 	print("Base instaciada, vida atual:",vida_atual)
 
 
-
 func morrer():
 	print("Game Over")
 
@@ -28,7 +27,6 @@ func receber_dano(dano: int):
 	print("Dano recebido, vida atual:",vida_atual)
 
 	checar_vida()
-
 
 
 func _process(delta): # executada o tempo todo -> delta serve para igualar computadores diferentes
