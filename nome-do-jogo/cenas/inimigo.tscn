@@ -1,18 +1,32 @@
-[gd_scene load_steps=4 format=3 uid="uid://do6iywov6k38k"]
+[gd_scene load_steps=5 format=3 uid="uid://do722ofqbaatp"]
 
-[ext_resource type="Texture2D" uid="uid://d2r5xysypi4il" path="res://assets/inimigo.png" id="1_1nma5"]
-[ext_resource type="Script" uid="uid://651gd6thqr30" path="res://scripts/inimigo.gd" id="1_l8wry"]
+[ext_resource type="Texture2D" uid="uid://d2r5xysypi4il" path="res://assets/inimigo.png" id="1_030df"]
+[ext_resource type="Script" uid="uid://oyj6yff8xxxo" path="res://scripts/inimigo.gd" id="1_l8wry"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_l8wry"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0b8xr"]
 size = Vector2(20, 45)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_l8wry"]
+radius = 35.902645
+
 [node name="Inimigo" type="Area2D"]
+position = Vector2(1071, 540)
 script = ExtResource("1_l8wry")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(4, -2)
-texture = ExtResource("1_1nma5")
+position = Vector2(53, -12)
+texture = ExtResource("1_030df")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, 1)
-shape = SubResource("RectangleShape2D_l8wry")
+position = Vector2(51, -10)
+shape = SubResource("RectangleShape2D_0b8xr")
+
+[node name="Detector" type="Area2D" parent="."]
+position = Vector2(-1071, -540)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detector"]
+position = Vector2(1120, 536)
+shape = SubResource("CircleShape2D_l8wry")
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true

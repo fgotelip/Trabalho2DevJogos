@@ -5,11 +5,11 @@
 
 [node name="Base" type="Area2D"]
 script = ExtResource("1_m2pul")
-vida_maxima = 1000
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-10, -37)
+position = Vector2(156, 137)
 texture = ExtResource("2_i546p")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2(166, 177)
 polygon = PackedVector2Array(106, 86, 105, 32, 111, 35, 111, 31, 112, -33, -18, -162, -146, -43, -144, 24, -136, 23, -137, 82, 105, 85)
