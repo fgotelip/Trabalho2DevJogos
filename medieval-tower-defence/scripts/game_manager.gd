@@ -6,7 +6,7 @@ extends Node2D
 # Variável para guardar onde o mouse está no grid (ex: 2, 5)
 var celula_mouse = Vector2i.ZERO
 
-func _process(delta):
+func _process(_delta):
 	# 1. Pega a posição do mouse no mundo
 	var mouse_pos = get_global_mouse_position()
 	
