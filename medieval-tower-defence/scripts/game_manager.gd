@@ -28,9 +28,9 @@ func verificar_terreno(coord: Vector2i):
 		# 'pode_construir' é o nome exato que demos no passo anterior
 		var eh_construtivel = dados_tile.get_custom_data("pode_construir")
 		#
-		#if eh_construtivel:
-			#print("Mouse em cima de ESTRADA VÁLIDA: ", coord)
-		#else:
-			#print("Terreno inválido (Grama/Muro)")
-	#else:
-		#print("Fora do mapa")
+		if eh_construtivel:
+			print("Mouse em cima de ESTRADA VÁLIDA: ", coord)
+		else:
+			print("Terreno inválido (Grama/Muro)")
+	else:
+		print("Fora do mapa")
