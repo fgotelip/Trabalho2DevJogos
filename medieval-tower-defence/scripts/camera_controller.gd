@@ -17,21 +17,21 @@ func _process(delta):
 		movimento = input_teclado
 	
 	# --- PARTE 2: Movimento pelo Mouse (Opcional) ---
-	elif usar_mouse:
-		var mouse_pos = get_viewport().get_mouse_position()
-		var tamanho_tela = get_viewport_rect().size
-		
-		# Verifica Esquerda/Direita
-		if mouse_pos.x < margem_borda:
-			movimento.x = -1
-		elif mouse_pos.x > tamanho_tela.x - margem_borda:
-			movimento.x = 1
-			
-		# Verifica Cima/Baixo
-		if mouse_pos.y < margem_borda:
-			movimento.y = -1
-		elif mouse_pos.y > tamanho_tela.y - margem_borda:
-			movimento.y = 1
+	#elif usar_mouse:
+		#var mouse_pos = get_viewport().get_mouse_position()
+		#var tamanho_tela = get_viewport_rect().size
+		#
+		## Verifica Esquerda/Direita
+		#if mouse_pos.x < margem_borda:
+			#movimento.x = -1
+		#elif mouse_pos.x > tamanho_tela.x - margem_borda:
+			#movimento.x = 1
+			#
+		## Verifica Cima/Baixo
+		#if mouse_pos.y < margem_borda:
+			#movimento.y = -1
+		#elif mouse_pos.y > tamanho_tela.y - margem_borda:
+			#movimento.y = 1
 			
 	# --- PARTE 3: Aplicação ---
 	# normalizamos o movimento do mouse para não ficar mais rápido que o teclado

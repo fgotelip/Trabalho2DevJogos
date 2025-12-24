@@ -29,6 +29,6 @@ func receber_dano(dano: int):
 	checar_vida()
 
 
-func _process(delta): # executada o tempo todo -> delta serve para igualar computadores diferentes
-	if Input.is_action_just_pressed("ui_accept"): # apenas um clique
-		receber_dano(20)
+#func _process(delta): # executada o tempo todo -> delta serve para igualar computadores diferentes
+	#if Input.is_action_just_pressed("ui_accept"): # apenas um clique
+		#receber_dano(20)
