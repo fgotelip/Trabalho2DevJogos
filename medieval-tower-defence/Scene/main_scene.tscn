@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=4 uid="uid://c34ot4pxp8jxr"]
+[gd_scene load_steps=29 format=4 uid="uid://c34ot4pxp8jxr"]
 
 [ext_resource type="Script" uid="uid://dgbsd7i0naqqj" path="res://scripts/game_manager.gd" id="1_7riyq"]
 [ext_resource type="Texture2D" uid="uid://i8mqidxgrtvx" path="res://Arts/Tilemap_color1.png" id="2_k87s1"]
@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" uid="uid://bxsfcl5g5ygru" path="res://Arts/Castle.png" id="11_s6rbu"]
 [ext_resource type="Texture2D" uid="uid://3fsjm0amjw74" path="res://Arts/House2.png" id="12_1u1ew"]
 [ext_resource type="Script" uid="uid://bn7qxwir4rwa7" path="res://scripts/camera_controller.gd" id="13_ug01c"]
+[ext_resource type="PackedScene" uid="uid://c76aqes6r0pex" path="res://Scene/character_body_2d.tscn" id="14_kx01p"]
+[ext_resource type="PackedScene" uid="uid://btk4xkbcia0ql" path="res://Scene/tropa_barreira.tscn" id="15_c1vcm"]
 [ext_resource type="PackedScene" uid="uid://q8u0eq34ft3b" path="res://Scene/base.tscn" id="16_q6wtm"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2c62f"]
@@ -2835,6 +2837,12 @@ scale = Vector2(1.9218749, 2.0644531)
 [node name="CollisionPolygon2D" parent="Base" index="1"]
 z_index = 1
 position = Vector2(-5, -2)
-polygon = PackedVector2Array(335, 345, 365, 343, 583, 377, 659, 373, 886, 343, 877, 228, 877, -15, 887, -136, 334, -143, 354, 81, 349, 234)
+polygon = PackedVector2Array(335, 345, 365, 343, 583, 377, 659, 373, 886, 343, 877, 228, 877, -15, 896, -197, 344, -196, 354, 81, 349, 234)
+
+[node name="Inimigo_Warrior" parent="." instance=ExtResource("14_kx01p")]
+position = Vector2(1006, 136)
+
+[node name="TropaBarreira" parent="." instance=ExtResource("15_c1vcm")]
+position = Vector2(1010, 294)
 
 [editable path="Base"]
