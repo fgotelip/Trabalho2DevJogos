@@ -1,13 +1,63 @@
-[gd_scene load_steps=12 format=3 uid="uid://c76aqes6r0pex"]
+[gd_scene load_steps=12 format=3 uid="uid://b7omyt8kn5vhs"]
 
-[ext_resource type="Script" uid="uid://b77w85vgp0k4s" path="res://scripts/inimigo.gd" id="1_yx0hs"]
-[ext_resource type="Texture2D" uid="uid://bq4bilwrigr4s" path="res://Arts/Tropas/Inimigos/Warrior_Run.png" id="2_wv00g"]
-[ext_resource type="Texture2D" uid="uid://vlelxueowe5c" path="res://Arts/Tropas/Inimigos/Warrior_Attack1.png" id="3_wv00g"]
+[ext_resource type="Script" uid="uid://ba4yvghg2xuct" path="res://scripts/tropa_monge.gd" id="1_slngq"]
+[ext_resource type="Texture2D" uid="uid://cy35kthajey05" path="res://Arts/Tropas/Aliados/Idle.png" id="2_slngq"]
+[ext_resource type="Texture2D" uid="uid://dkopa63vkumnj" path="res://Arts/Tropas/Aliados/Heal.png" id="3_olviv"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_sid3l"]
-size = Vector2(73, 73)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2y7b3"]
+size = Vector2(69, 73)
 
-[sub_resource type="Animation" id="Animation_pp4s8"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_slngq"]
+radius = 223.02017
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bllql"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vw84o"]
+bg_color = Color(0, 1, 0, 1)
+
+[sub_resource type="Animation" id="Animation_5ri4x"]
+resource_name = "parado"
+length = 0.5
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_slngq")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [6]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
+
+[sub_resource type="Animation" id="Animation_ubddr"]
 length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -19,7 +69,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("2_wv00g")]
+"values": [ExtResource("2_slngq")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -46,9 +96,8 @@ tracks/2/keys = {
 "values": [0]
 }
 
-[sub_resource type="Animation" id="Animation_sid3l"]
-resource_name = "atacando"
-length = 0.6
+[sub_resource type="Animation" id="Animation_ojpmv"]
+resource_name = "curando"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -59,7 +108,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [ExtResource("3_wv00g")]
+"values": [ExtResource("3_olviv")]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -71,7 +120,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [4]
+"values": [11]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -80,102 +129,53 @@ tracks/2/path = NodePath("Sprite2D:frame")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 1, 2, 3]
+"values": [0, 1, 1, 3, 4, 5, 6, 7, 8, 9, 10]
 }
 
-[sub_resource type="Animation" id="Animation_mbess"]
-resource_name = "correndo"
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_wv00g")]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:hframes")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [6]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:frame")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.33333334, 0.4, 0.5, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 4, 5, 5]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_hnm5t"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_a8vuu"]
 _data = {
-&"RESET": SubResource("Animation_pp4s8"),
-&"atacando": SubResource("Animation_sid3l"),
-&"correndo": SubResource("Animation_mbess")
+&"RESET": SubResource("Animation_ubddr"),
+&"curando": SubResource("Animation_ojpmv"),
+&"parado": SubResource("Animation_5ri4x")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_wv00g"]
-radius = 46.69047
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wv00g"]
-bg_color = Color(1, 0, 0, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sid3l"]
-bg_color = Color(0, 1, 0, 1)
-
-[node name="Inimigo_Warrior" type="CharacterBody2D"]
-collision_layer = 2
-collision_mask = 13
-script = ExtResource("1_yx0hs")
+[node name="TropaMonge" type="StaticBody2D" groups=["aliados"]]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_slngq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_wv00g")
+texture = ExtResource("2_slngq")
 hframes = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -1.5)
-shape = SubResource("RectangleShape2D_sid3l")
+position = Vector2(3.5, -5.5)
+shape = SubResource("RectangleShape2D_2y7b3")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_hnm5t")
-}
-autoplay = "correndo"
-
-[node name="DetectorAtaque" type="Area2D" parent="."]
+[node name="AreaAlcance" type="Area2D" parent="."]
 collision_layer = 0
-collision_mask = 12
+collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectorAtaque" groups=["inimigos"]]
-shape = SubResource("CircleShape2D_wv00g")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaAlcance"]
+shape = SubResource("CircleShape2D_slngq")
 
-[node name="TimerAtaque" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="."]
+autostart = true
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 offset_left = -25.0
 offset_top = -50.0
 offset_right = 25.0
 offset_bottom = -45.0
-theme_override_styles/background = SubResource("StyleBoxFlat_wv00g")
-theme_override_styles/fill = SubResource("StyleBoxFlat_sid3l")
+theme_override_styles/background = SubResource("StyleBoxFlat_bllql")
+theme_override_styles/fill = SubResource("StyleBoxFlat_vw84o")
 show_percentage = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_a8vuu")
+}
+autoplay = "parado"

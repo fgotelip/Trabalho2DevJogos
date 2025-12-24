@@ -1,26 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://q8u0eq34ft3b"]
+[gd_scene load_steps=6 format=3 uid="uid://q8u0eq34ft3b"]
 
 [ext_resource type="Texture2D" uid="uid://bxsfcl5g5ygru" path="res://Arts/Castle.png" id="1_3vi8l"]
 [ext_resource type="Texture2D" uid="uid://dgvuvf2ymkpfd" path="res://Arts/Barracks.png" id="2_7lj54"]
 [ext_resource type="Script" uid="uid://p2e8wljktyej" path="res://scripts/base.gd" id="2_8rhti"]
 
-[node name="Base" type="Area2D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ce0i"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pntdf"]
+bg_color = Color(0, 1, 0, 1)
+
+[node name="Base" type="StaticBody2D"]
 script = ExtResource("2_8rhti")
 
 [node name="Castelo" type="Sprite2D" parent="."]
-position = Vector2(535, 215)
+position = Vector2(11, -20.999998)
+scale = Vector2(1.56, 1.5)
 texture = ExtResource("1_3vi8l")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-position = Vector2(-198, 85)
 polygon = PackedVector2Array(1, -6, 116, 254, 366, 91, 157, 11)
 
 [node name="Casa1" type="Sprite2D" parent="."]
-position = Vector2(760.9999, -138)
-scale = Vector2(1.5185232, 1.7081158)
+position = Vector2(135, -271)
+scale = Vector2(1.334, 1.5)
 texture = ExtResource("2_7lj54")
 
 [node name="Casa2" type="Sprite2D" parent="."]
-position = Vector2(471, -145.00002)
-scale = Vector2(1.4984591, 1.4584818)
+position = Vector2(-133, -285)
+scale = Vector2(1.541, 1.5)
 texture = ExtResource("2_7lj54")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = -250.0
+offset_top = -250.0
+offset_right = 250.0
+offset_bottom = -220.0
+theme_override_styles/background = SubResource("StyleBoxFlat_0ce0i")
+theme_override_styles/fill = SubResource("StyleBoxFlat_pntdf")
+show_percentage = false

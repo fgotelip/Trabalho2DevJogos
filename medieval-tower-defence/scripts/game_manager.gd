@@ -1,62 +1,157 @@
 extends Node2D
 
-# Referência para o TileMap onde estão as estradas (ajuste o nome se for diferente)
+# --- REFERÊNCIAS ---
 @onready var tile_map = $Camada_Chao 
-
-@onready var inimigo_cena = preload("res://Scene/character_body_2d.tscn") # Ajuste o caminho
-@onready var rotas = $Rotas.get_children()
-#@onready var rotas = [$Rotas/Rota31]
+@onready var ui = $InterfaceUsuario 
+@onready var label_ouro = $InterfaceUsuario/LabelOuro 
+@onready var rotas = $Rotas.get_children() 
 @onready var base = $Base
 
-# Variável para guardar onde o mouse está no grid (ex: 2, 5)
-var celula_mouse = Vector2i.ZERO
+# --- ECONOMIA ---
+var custo_guerreiro: int = 50
+var custo_arqueiro: int = 75
+var custo_monge: int = 100
+var ouro_atual: int = 10000000000 
+
+# --- CENAS (ALIADOS E INIMIGOS) ---
+var tropa_guerreiro_cena = preload("res://Scene/tropa_barreira.tscn") 
+var tropa_arqueiro_cena = preload("res://Scene/tropa_arqueiro.tscn")
+var tropa_monge_cena = preload("res://Scene/tropa_monge.tscn")
+
+# INIMIGOS
+var inimigo_guerreiro_cena = preload("res://Scene/character_body_2d.tscn") 
+var inimigo_arqueiro_cena = preload("res://Scene/inimigo_arqueiro.tscn") # Certifique-se que criou esta cena!
+
+# --- CONTROLE ---
+var tropa_para_construir = null 
+var custo_da_tropa_selecionada: int = 0
+var sprite_preview = null 
+
+func _ready():
+	atualizar_interface_ouro()
 
 func _process(_delta):
-	# 1. Pega a posição do mouse no mundo
-	var mouse_pos = get_global_mouse_position()
-	
-	# 2. Converte Pixels -> Coordenada de Grid (O segredo do jogo!)
-	# A função local_to_map faz a mágica de transformar (150px, 300px) em (2, 4)
-	var nova_celula = tile_map.local_to_map(mouse_pos)
-	
-	# Só processamos se o mouse mudou de célula (otimização)
-	if nova_celula != celula_mouse:
-		celula_mouse = nova_celula
-		verificar_terreno(celula_mouse)
-		
+	# Teclas de Atalho de Compra
+	if Input.is_action_just_pressed("selecionar_tropa_1"): selecionar_guerreiro()
+	elif Input.is_action_just_pressed("selecionar_tropa_2"): selecionar_arqueiro()
+	elif Input.is_action_just_pressed("selecionar_tropa_3"): selecionar_monge()
+
+	# ESPAÇO: SPAWN MISTO
 	if Input.is_action_just_pressed("ui_accept"):
 		spawnar_inimigos()
+
+	if tropa_para_construir != null:
+		atualizar_preview()
+
+# --- SPAWN DE INIMIGOS (ATUALIZADO) ---
+func spawnar_inimigos():
+	print("Iniciando onda mista!")
+	for rota in rotas:
+		# 50% de chance para cada um. 
+		# Se quiser mais guerreiros, faça: [inimigo_guerreiro_cena, inimigo_guerreiro_cena, inimigo_arqueiro_cena]
+		var lista_inimigos = [inimigo_guerreiro_cena, inimigo_arqueiro_cena]
+		var tipo_sorteado = lista_inimigos.pick_random()
 		
-func spawnar_inimigo(rota):
-	var novo_inimigo = inimigo_cena.instantiate()
-	
-	# Define a posição inicial na ponta da linha
-	# (curve.get_point_position(0) pega o primeiro clique que você deu)
+		spawnar_inimigo(rota, tipo_sorteado)
+
+func spawnar_inimigo(rota, cena_do_inimigo):
+	var novo_inimigo = cena_do_inimigo.instantiate()
 	var inicio = rota.curve.get_point_position(0)
+	
 	novo_inimigo.global_position = rota.to_global(inicio)
+	novo_inimigo.inimigo_morreu.connect(receber_recompensa)
 	
 	add_child(novo_inimigo)
-	
-	# Manda o inimigo seguir essa linha
 	novo_inimigo.definir_rota(rota, base)
 
-func spawnar_inimigos():
-	for rota in rotas:
-		spawnar_inimigo(rota)
+# --- ECONOMIA E UI ---
+func verificar_saldo(custo) -> bool:
+	if ouro_atual >= custo: return true
+	print("Ouro insuficiente!")
+	return false
 
+func atualizar_interface_ouro():
+	if label_ouro: label_ouro.text = "Ouro: " + str(ouro_atual)
 
-func verificar_terreno(coord: Vector2i):
-	# 3. Pegamos os DADOS do tile nessa coordenada
-	var dados_tile = tile_map.get_cell_tile_data(coord)
+func receber_recompensa(valor):
+	ouro_atual += valor
+	atualizar_interface_ouro()
+
+# --- SELEÇÃO DE TROPAS ---
+func selecionar_guerreiro():
+	if verificar_saldo(custo_guerreiro):
+		configurar_construcao(tropa_guerreiro_cena, custo_guerreiro)
+
+func selecionar_arqueiro():
+	if verificar_saldo(custo_arqueiro):
+		configurar_construcao(tropa_arqueiro_cena, custo_arqueiro)
+
+func selecionar_monge():
+	if verificar_saldo(custo_monge):
+		configurar_construcao(tropa_monge_cena, custo_monge)
+
+func configurar_construcao(cena, custo):
+	print("Selecionado. Custo: ", custo)
+	tropa_para_construir = cena
+	custo_da_tropa_selecionada = custo
+	criar_preview()
+
+# --- CONEXÃO DOS BOTÕES (UI) ---
+func _on_guerreiro_pressed() -> void: selecionar_guerreiro()
+func _on_arqueiro_pressed() -> void: selecionar_arqueiro()
+func _on_monge_pressed() -> void: selecionar_monge()
+
+# --- CONSTRUÇÃO (PREVIEW E CLIQUE) ---
+func criar_preview():
+	if sprite_preview != null: sprite_preview.queue_free()
+	sprite_preview = tropa_para_construir.instantiate()
+	add_child(sprite_preview)
+	sprite_preview.modulate = Color(1, 1, 1, 0.5) 
+	sprite_preview.process_mode = Node.PROCESS_MODE_DISABLED
 	
-	if dados_tile:
-		# Pergunta: "Esse tile tem a etiqueta 'pode_construir' verdadeira?"
-		# 'pode_construir' é o nome exato que demos no passo anterior
-		var eh_construtivel = dados_tile.get_custom_data("pode_construir")
-		#
-		#if eh_construtivel:
-			#print("Mouse em cima de ESTRADA VÁLIDA: ", coord)
-		#else:
-			#print("Terreno inválido (Grama/Muro)")
-	#else:
-		#print("Fora do mapa")
+	for filho in sprite_preview.get_children():
+		if filho is CollisionShape2D or filho is CollisionPolygon2D or filho is Area2D:
+			filho.queue_free()
+		elif filho is ProgressBar:
+			filho.hide()
+			
+	sprite_preview.collision_layer = 0
+	sprite_preview.collision_mask = 0
+
+func atualizar_preview():
+	if sprite_preview != null:
+		var mouse_pos = get_global_mouse_position()
+		var coord_grid = tile_map.local_to_map(mouse_pos)
+		sprite_preview.position = tile_map.map_to_local(coord_grid)
+
+func _unhandled_input(event):
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
+			tentar_construir()
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			cancelar_construcao()
+
+func tentar_construir():
+	if ouro_atual < custo_da_tropa_selecionada:
+		cancelar_construcao(); return
+
+	var mouse_pos = get_global_mouse_position()
+	var coord_grid = tile_map.local_to_map(mouse_pos)
+	var dados_tile = tile_map.get_cell_tile_data(coord_grid)
+	
+	if dados_tile and dados_tile.get_custom_data("pode_construir"):
+		ouro_atual -= custo_da_tropa_selecionada
+		atualizar_interface_ouro()
+		var nova_tropa = tropa_para_construir.instantiate()
+		nova_tropa.position = tile_map.map_to_local(coord_grid)
+		add_child(nova_tropa)
+		cancelar_construcao() 
+	else:
+		print("Terreno inválido!")
+
+func cancelar_construcao():
+	tropa_para_construir = null
+	custo_da_tropa_selecionada = 0
+	if sprite_preview != null:
+		sprite_preview.queue_free()
+		sprite_preview = null

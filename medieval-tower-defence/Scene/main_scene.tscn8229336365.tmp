@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://c34ot4pxp8jxr"]
+[gd_scene load_steps=33 format=4 uid="uid://c34ot4pxp8jxr"]
 
 [ext_resource type="Script" uid="uid://dgbsd7i0naqqj" path="res://scripts/game_manager.gd" id="1_7riyq"]
 [ext_resource type="Texture2D" uid="uid://i8mqidxgrtvx" path="res://Arts/Tilemap_color1.png" id="2_k87s1"]
@@ -2837,17 +2837,6 @@ _data = {
 }
 point_count = 2
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k87s1"]
-bg_color = Color(0.45840496, 0.45840508, 0.4584049, 1)
-expand_margin_left = 5.0
-expand_margin_top = 5.0
-expand_margin_right = 5.0
-expand_margin_bottom = 5.0
-
-[sub_resource type="LabelSettings" id="LabelSettings_k87s1"]
-font_size = 25
-font_color = Color(0.78319067, 0.78319025, 0, 1)
-
 [node name="Mundo" type="Node2D"]
 script = ExtResource("1_7riyq")
 
@@ -2934,38 +2923,13 @@ curve = SubResource("Curve2D_n7l00")
 
 [node name="InterfaceUsuario" type="CanvasLayer" parent="."]
 
-[node name="LabelOuro" type="Label" parent="InterfaceUsuario"]
-offset_left = 4.0
-offset_top = 43.0
-offset_right = 88.0
-offset_bottom = 92.0
-theme_override_styles/normal = SubResource("StyleBoxFlat_k87s1")
-text = "Ouro: 100"
-label_settings = SubResource("LabelSettings_k87s1")
-uppercase = true
-
 [node name="Guerreiro" type="Button" parent="InterfaceUsuario"]
-offset_top = 91.0
-offset_right = 160.0
-offset_bottom = 122.0
+offset_left = 128.0
+offset_top = 5.0
+offset_right = 288.0
+offset_bottom = 36.0
 text = "Comprar  Guerreiro"
 
-[node name="Arqueiro" type="Button" parent="InterfaceUsuario"]
-offset_top = 122.0
-offset_right = 149.0
-offset_bottom = 153.0
-text = "Comprar Arqueiro
-"
-
-[node name="Monge" type="Button" parent="InterfaceUsuario"]
-offset_top = 153.0
-offset_right = 134.0
-offset_bottom = 184.0
-text = "Comprar Monge
-"
-
 [connection signal="pressed" from="InterfaceUsuario/Guerreiro" to="." method="_on_guerreiro_pressed"]
-[connection signal="pressed" from="InterfaceUsuario/Arqueiro" to="." method="_on_arqueiro_pressed"]
-[connection signal="pressed" from="InterfaceUsuario/Monge" to="." method="_on_monge_pressed"]
 
 [editable path="Base"]

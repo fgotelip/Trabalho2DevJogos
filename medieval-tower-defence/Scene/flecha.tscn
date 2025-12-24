@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dy2y8bgmwgful"]
+
+[ext_resource type="Script" uid="uid://cxu0xxjwn34kg" path="res://scripts/flecha.gd" id="1_qindt"]
+[ext_resource type="Texture2D" uid="uid://bia5bnf6jmxxi" path="res://Arts/Tropas/Aliados/Arrow.png" id="2_r7cu8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ecb8e"]
+size = Vector2(45, 18)
+
+[node name="Flecha" type="Area2D"]
+collision_layer = 0
+collision_mask = 6
+script = ExtResource("1_qindt")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_r7cu8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, 1)
+shape = SubResource("RectangleShape2D_ecb8e")
