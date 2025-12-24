@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3 uid="uid://q8u0eq34ft3b"]
+
+[ext_resource type="Texture2D" uid="uid://bxsfcl5g5ygru" path="res://Arts/Castle.png" id="1_3vi8l"]
+[ext_resource type="Texture2D" uid="uid://dgvuvf2ymkpfd" path="res://Arts/Barracks.png" id="2_7lj54"]
+[ext_resource type="Script" uid="uid://p2e8wljktyej" path="res://scripts/base.gd" id="2_8rhti"]
+
+[node name="Base" type="Area2D"]
+script = ExtResource("2_8rhti")
+
+[node name="Castelo" type="Sprite2D" parent="."]
+position = Vector2(535, 215)
+texture = ExtResource("1_3vi8l")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(1, -6, 116, 254, 366, 91, 157, 11)
+
+[node name="Casa1" type="Sprite2D" parent="."]
+position = Vector2(760.9999, -138)
+scale = Vector2(1.5185232, 1.7081158)
+texture = ExtResource("2_7lj54")
+
+[node name="Casa2" type="Sprite2D" parent="."]
+position = Vector2(471, -145.00002)
+scale = Vector2(1.4984591, 1.4584818)
+texture = ExtResource("2_7lj54")
