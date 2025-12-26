@@ -165,6 +165,8 @@ collision_mask = 15
 script = ExtResource("1_glams")
 velocidade = 40.0
 vida = 60
+dano = null
+valor_em_ouro = null
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["inimigos"]]
 texture = ExtResource("2_glams")

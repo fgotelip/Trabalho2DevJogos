@@ -2368,10 +2368,13 @@ position = Vector2(715, -528)
 
 [node name="inimigoArqueiro" parent="Unidades" instance=ExtResource("16_5pd2f")]
 position = Vector2(-39, -558)
+velocidade = 150.0
+dano = 10
 valor_em_ouro = 150
 
 [node name="Inimigo_Warrior" parent="Unidades" instance=ExtResource("15_djn62")]
 position = Vector2(-531, -579)
+velocidade = 50.0
 valor_em_ouro = 100
 
 [node name="Flecha" parent="Unidades" instance=ExtResource("20_5pd2f")]

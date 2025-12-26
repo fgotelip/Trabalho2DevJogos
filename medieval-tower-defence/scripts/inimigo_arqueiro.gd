@@ -1,6 +1,7 @@
 extends "res://Scripts/inimigo.gd"
 
 var flecha_cena = preload("res://Scene/flecha.tscn")
+@onready var shape_ataque = $DetectorAtaque/CollisionShape2D 
 
 # Sobrescrevemos o ataque corpo-a-corpo por tiro
 func atacar(alvo):
@@ -19,3 +20,18 @@ func atacar(alvo):
 	get_tree().root.add_child(flecha)
 	
 	print("Inimigo Arqueiro disparou!")
+
+func atualizar_orientacao():
+	# Mantive a lógica original do Sprite
+	if velocity.x != 0 and sprite_visual:
+		sprite_visual.flip_h = velocity.x < 0
+
+	# ADICIONADO: Lógica da rotação do ataque
+	if shape_ataque:
+		# Se a velocidade Vertical for maior que a Horizontal (está subindo/descendo)
+		if abs(velocity.y) > abs(velocity.x):
+			shape_ataque.rotation_degrees = 90 # Gira o retângulo
+		
+		# Se a velocidade Horizontal for maior (está indo para os lados)
+		elif abs(velocity.x) > abs(velocity.y) and velocity.x != 0:
+			shape_ataque.rotation_degrees = 0  # Volta o retângulo ao normal

@@ -32,6 +32,7 @@ func _ready():
 	atualizar_interface_ouro()
 
 func _process(_delta):
+	print(shape_arqueiro)
 	# Teclas de Atalho de Compra
 	if Input.is_action_just_pressed("selecionar_tropa_1"): selecionar_guerreiro()
 	elif Input.is_action_just_pressed("selecionar_tropa_2"): selecionar_arqueiro()
