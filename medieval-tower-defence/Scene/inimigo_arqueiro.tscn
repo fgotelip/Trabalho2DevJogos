@@ -163,10 +163,6 @@ _data = {
 collision_layer = 2
 collision_mask = 15
 script = ExtResource("1_glams")
-velocidade = 40.0
-vida = 60
-dano = null
-valor_em_ouro = null
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["inimigos"]]
 texture = ExtResource("2_glams")
@@ -180,6 +176,7 @@ collision_layer = 0
 collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectorAtaque" groups=["inimigos"]]
+position = Vector2(30, 0)
 shape = SubResource("RectangleShape2D_glams")
 
 [node name="TimerAtaque" type="Timer" parent="."]

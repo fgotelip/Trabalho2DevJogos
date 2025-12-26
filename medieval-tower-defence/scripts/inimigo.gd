@@ -6,6 +6,8 @@ extends CharacterBody2D
 @export var vida: int = 30
 @export var dano: int = 10
 @export var valor_em_ouro: int = 15
+@export var intervalo_ataque: float = 1.0
+
 
 # --- REFERÊNCIAS ---
 @onready var sprite_visual = $Sprite2D 
@@ -23,14 +25,21 @@ var alvo_final: Node2D
 
 # Controle de Ataque
 var pode_atacar: bool = true 
+var olhando_para_direita: bool = true
+var alvo_pendente_dano: Node2D = null
 
 func _ready():
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	olhando_para_direita = (sprite_visual == null or not sprite_visual.flip_h)
+	# Conecta fim de animação para aplicar dano pendente
+	if anim_player and not anim_player.animation_finished.is_connected(_on_animation_finished):
+		anim_player.animation_finished.connect(_on_animation_finished)
 	
 	barra_vida.max_value = vida
 	barra_vida.value = vida
 	barra_vida.show()
 	
+	timer_ataque.wait_time = intervalo_ataque
 	timer_ataque.timeout.connect(_on_timer_ataque_timeout)
 	
 	# Começa parado até receber uma rota
@@ -68,6 +77,10 @@ func processar_combate() -> bool:
 		if corpo.has_method("receber_dano"):
 			velocity = Vector2.ZERO
 			
+			# Vira para o alvo antes de atacar
+			if corpo is Node2D:
+				_virar_para_posicao(corpo.global_position)
+			
 			if pode_atacar:
 				atacar(corpo)
 			else:
@@ -84,9 +97,17 @@ func processar_combate() -> bool:
 func atacar(alvo):
 	pode_atacar = false
 	timer_ataque.start()
+	alvo_pendente_dano = alvo
 	tocar_animacao("atacando")
 	print("POW! Inimigo bateu em: ", alvo.name)
-	alvo.receber_dano(dano)
+
+func _on_animation_finished(anim_name):
+	if anim_name == "atacando":
+		if is_instance_valid(alvo_pendente_dano) and alvo_pendente_dano.has_method("receber_dano"):
+			alvo_pendente_dano.receber_dano(dano)
+		alvo_pendente_dano = null
+		# volta pro idle ao concluir ataque
+		tocar_animacao("idle")
 
 func _on_timer_ataque_timeout():
 	pode_atacar = true
@@ -131,6 +152,16 @@ func atualizar_orientacao():
 	# a orientação não vai mudar sozinha quando parar. Isso é bom.
 	if velocity.x != 0 and sprite_visual:
 		sprite_visual.flip_h = velocity.x < 0
+		olhando_para_direita = not sprite_visual.flip_h
+
+func _virar_para_posicao(pos: Vector2):
+	var dx = pos.x - global_position.x
+	if abs(dx) < 0.001:
+		return
+	var nova_direita = dx > 0.0
+	if sprite_visual:
+		sprite_visual.flip_h = not nova_direita
+	olhando_para_direita = nova_direita
 
 func definir_rota(path_2d: Path2D, base_alvo: Node2D):
 	alvo_final = base_alvo

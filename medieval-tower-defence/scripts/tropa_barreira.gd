@@ -9,6 +9,8 @@ extends StaticBody2D
 var vida_atual: int
 var inimigos_no_alcance: Array = [] 
 var esta_a_atacar: bool = false # <--- O SEGREDO DO ESTADO
+var olhando_para_direita: bool = true
+var alvo_pendente_dano: Node2D = null
 
 # --- REFERÊNCIAS ---
 @onready var timer_ataque = $Timer 
@@ -42,6 +44,17 @@ func _ready():
 		
 	# Estado Inicial
 	tocar_animacao("idle")
+	# Garante orientação inicial
+	olhando_para_direita = (scale.x >= 0)
+
+func _virar_para_posicao(pos: Vector2):
+	var dx = pos.x - global_position.x
+	if abs(dx) < 0.001:
+		return
+	var nova_direita = dx > 0.0
+	if nova_direita != olhando_para_direita:
+		olhando_para_direita = nova_direita
+		scale.x = abs(scale.x) if olhando_para_direita else -abs(scale.x)
 
 # --- GERENCIADOR DE ANIMAÇÃO ---
 func tocar_animacao(nome: String):
@@ -50,7 +63,14 @@ func tocar_animacao(nome: String):
 
 func _on_animation_finished(anim_name):
 	# Se acabou o ataque (ou cura), liberta o personagem e volta a Idle
-	if anim_name == "atacando" or anim_name == "curando":
+	if anim_name == "atacando":
+		# Aplica dano somente ao final da animação
+		if is_instance_valid(alvo_pendente_dano) and alvo_pendente_dano.has_method("receber_dano"):
+			alvo_pendente_dano.receber_dano(dano)
+		alvo_pendente_dano = null
+		esta_a_atacar = false
+		tocar_animacao("parado")
+	elif anim_name == "curando":
 		esta_a_atacar = false
 		tocar_animacao("parado")
 
@@ -59,15 +79,17 @@ func atacar(alvo):
 	# Se já está ocupado a atacar, ignora (evita reiniciar animação)
 	if esta_a_atacar:
 		return
+
+	# Vira para o alvo antes de atacar
+	if is_instance_valid(alvo) and alvo is Node2D:
+		_virar_para_posicao(alvo.global_position)
 		
 	# Bloqueia novas ações
 	esta_a_atacar = true
+	alvo_pendente_dano = alvo
 	
 	tocar_animacao("atacando")
 	print("Tropa atacou: ", alvo.name)
-	
-	if alvo.has_method("receber_dano"):
-		alvo.receber_dano(dano)
 
 func _on_timer_timeout():
 	# Limpeza da lista

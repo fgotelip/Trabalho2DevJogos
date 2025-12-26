@@ -1,4 +1,4 @@
-extends "res://Scripts/tropa_barreira.gd" 
+extends "res://scripts/tropa_barreira.gd" 
 # ^^^ ISSO É HERANÇA! Pegamos tudo do script anterior.
 
 # Carregamos a flecha
@@ -8,6 +8,9 @@ var flecha_cena = preload("res://Scene/flecha.tscn")
 # Sobrescrevemos (Override) a função atacar
 func atacar(alvo):
 	# 1. Toca animação (se tiver)
+	if is_instance_valid(alvo) and alvo is Node2D:
+		# Vira para o alvo antes de atacar
+		_virar_para_posicao(alvo.global_position)
 	if anim_player.has_animation("atacando"):
 		anim_player.play("atacando")
 	

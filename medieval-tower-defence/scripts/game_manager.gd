@@ -4,8 +4,8 @@ extends Node2D
 @onready var tile_map = $Camada_Chao 
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
-@onready var rotas = $Rotas.get_children() 
-#@onready var rotas = [$Rotas/Rota12,$Rotas/Rota11]
+#@onready var rotas = $Rotas.get_children() 
+@onready var rotas = [$Rotas/Rota11]
 @onready var base = $Base
 
 # --- ECONOMIA ---
@@ -27,12 +27,12 @@ var inimigo_arqueiro_cena = preload("res://Scene/inimigo_arqueiro.tscn") # Certi
 var tropa_para_construir = null 
 var custo_da_tropa_selecionada: int = 0
 var sprite_preview = null 
+var preview_facing_right: bool = true
 
 func _ready():
 	atualizar_interface_ouro()
 
 func _process(_delta):
-	print(shape_arqueiro)
 	# Teclas de Atalho de Compra
 	if Input.is_action_just_pressed("selecionar_tropa_1"): selecionar_guerreiro()
 	elif Input.is_action_just_pressed("selecionar_tropa_2"): selecionar_arqueiro()
@@ -46,6 +46,10 @@ func _process(_delta):
 
 	if tropa_para_construir != null:
 		atualizar_preview()
+
+	# ESC para cancelar construção
+	if Input.is_action_just_pressed("ui_cancel") and tropa_para_construir != null:
+		cancelar_construcao()
 
 # --- SPAWN DE INIMIGOS (ATUALIZADO) ---
 func spawnar_inimigos(teste):
@@ -112,10 +116,19 @@ func criar_preview():
 	add_child(sprite_preview)
 	sprite_preview.modulate = Color(1, 1, 1, 0.5) 
 	sprite_preview.process_mode = Node.PROCESS_MODE_DISABLED
-	
+
+	# Ajusta orientação do preview conforme clique usado para comprar
+	sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
+
+	# Mantém nós visuais, desativando colisões e detecções para o preview
 	for filho in sprite_preview.get_children():
-		if filho is CollisionShape2D or filho is CollisionPolygon2D or filho is Area2D:
-			filho.queue_free()
+		if filho is CollisionShape2D:
+			filho.disabled = true
+		elif filho is Area2D:
+			# Desativa monitoramento para não interferir no preview
+			filho.set_deferred("monitoring", false)
+			filho.collision_layer = 0
+			filho.collision_mask = 0
 		elif filho is ProgressBar:
 			filho.hide()
 			
@@ -128,14 +141,43 @@ func atualizar_preview():
 		var coord_grid = tile_map.local_to_map(mouse_pos)
 		sprite_preview.position = tile_map.map_to_local(coord_grid)
 
+		# Aplica orientação do alcance para tiles marcados como verticais
+		var dados_tile = tile_map.get_cell_tile_data(coord_grid)
+		if dados_tile and sprite_preview.get_script() != null:
+			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
+			# Apenas para o preview do arqueiro
+			var script_path := str(sprite_preview.get_script().resource_path)
+			if script_path.find("tropa_arqueiro.gd") != -1:
+				_aplicar_orientacao_alcance(sprite_preview, eh_vertical)
+
+		# Garante espelhamento persistente do preview
+		sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
+
 func _unhandled_input(event):
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
-			tentar_construir()
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			# Esquerdo: constrói usando a orientação do preview
+			tentar_construir(preview_facing_right)
+		elif event.button_index == MOUSE_BUTTON_RIGHT and tropa_para_construir != null:
+			# Direito: cancelar construção
 			cancelar_construcao()
-		
-func tentar_construir():
+	elif event is InputEventKey and event.pressed and not event.echo:
+		# ESC (ui_cancel) para cancelar
+		if event.keycode == KEY_ESCAPE and tropa_para_construir != null:
+			cancelar_construcao()
+		# Setas esquerda/direita controlam orientação do preview
+		elif event.keycode == KEY_LEFT and tropa_para_construir != null:
+			preview_facing_right = false
+			if sprite_preview != null:
+				sprite_preview.scale.x = -abs(sprite_preview.scale.x)
+		elif event.keycode == KEY_RIGHT and tropa_para_construir != null:
+			preview_facing_right = true
+			if sprite_preview != null:
+				sprite_preview.scale.x = abs(sprite_preview.scale.x)
+
+# (Removidos handlers gui_input; orientação agora é pelas setas ← →)
+
+func tentar_construir(facing_right: bool = true):
 	if ouro_atual < custo_da_tropa_selecionada:
 		cancelar_construcao()
 		return
@@ -172,11 +214,28 @@ func tentar_construir():
 		
 		var nova_tropa = tropa_para_construir.instantiate()
 		nova_tropa.position = posicao_final
+		# Define orientação inicial (direita/esquerda)
+		nova_tropa.scale.x = abs(nova_tropa.scale.x) if facing_right else -abs(nova_tropa.scale.x)
+		# Ajusta orientação do alcance conforme tile
+		if dados_tile and nova_tropa.get_script() != null:
+			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
+			var script_path := str(nova_tropa.get_script().resource_path)
+			if script_path.find("tropa_arqueiro.gd") != -1:
+				_aplicar_orientacao_alcance(nova_tropa, eh_vertical)
 		add_child(nova_tropa)
 		
 		cancelar_construcao() 
 	else:
 		print("Terreno inválido!")
+
+# --- AUXILIAR: aplica rotação do AreaAlcance ---
+func _aplicar_orientacao_alcance(node_aliado: Node2D, eh_vertical: bool):
+	if node_aliado.has_node("AreaAlcance"):
+		var area := node_aliado.get_node("AreaAlcance")
+		if eh_vertical:
+			area.rotation_degrees = 90
+		else:
+			area.rotation_degrees = 0
 
 func cancelar_construcao():
 	tropa_para_construir = null

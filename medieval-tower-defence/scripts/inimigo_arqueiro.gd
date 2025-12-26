@@ -1,13 +1,15 @@
-extends "res://Scripts/inimigo.gd"
+extends "res://scripts/inimigo.gd"
 
 var flecha_cena = preload("res://Scene/flecha.tscn")
 @onready var shape_ataque = $DetectorAtaque/CollisionShape2D 
-
 # Sobrescrevemos o ataque corpo-a-corpo por tiro
 func atacar(alvo):
 	# Bloqueia novos ataques (copiando a logica do pai)
 	pode_atacar = false
 	timer_ataque.start()
+
+	if is_instance_valid(alvo) and alvo is Node2D:
+		_virar_para_posicao(alvo.global_position)
 	
 	if anim_player.has_animation("atacando"):
 		anim_player.play("atacando")

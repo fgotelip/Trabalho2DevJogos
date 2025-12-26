@@ -174,6 +174,7 @@ libraries = {
 autoplay = "parado"
 
 [node name="ShapeCast2D" type="ShapeCast2D" parent="."]
+position = Vector2(10, 0)
 shape = SubResource("CircleShape2D_slngq")
 target_position = Vector2(0, 0)
 collision_mask = 4
