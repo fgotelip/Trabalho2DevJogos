@@ -139,20 +139,20 @@ _data = {
 &"parado": SubResource("Animation_5ri4x")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_olviv"]
-radius = 224.55
+[sub_resource type="CircleShape2D" id="CircleShape2D_slngq"]
+radius = 50.0
 
 [node name="TropaMonge" type="StaticBody2D" groups=["aliados"]]
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_slngq")
+intervalo_cura = 3.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_slngq")
 hframes = 6
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(3.5, -5.5)
 shape = SubResource("RectangleShape2D_2y7b3")
 
 [node name="Timer" type="Timer" parent="."]
@@ -174,8 +174,6 @@ libraries = {
 autoplay = "parado"
 
 [node name="ShapeCast2D" type="ShapeCast2D" parent="."]
-visible = false
-position = Vector2(2, -3)
-shape = SubResource("CircleShape2D_olviv")
+shape = SubResource("CircleShape2D_slngq")
 target_position = Vector2(0, 0)
 collision_mask = 4

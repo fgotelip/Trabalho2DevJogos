@@ -1,6 +1,7 @@
 extends CharacterBody2D
 
 # --- ESTATÍSTICAS ---
+@export_group("Atributos")
 @export var velocidade: float = 100.0
 @export var vida: int = 30
 @export var dano: int = 10
@@ -119,7 +120,7 @@ func mover_pela_rota():
 	var distancia_percorrida = global_position.distance_to(posicao_antes)
 	
 	# 4. Decisão: Se andou mais que 0.5 pixels, corre. Se não, idle.
-	if distancia_percorrida > 0.5:
+	if distancia_percorrida > 0.6:
 		tocar_animacao("correndo")
 	else:
 		tocar_animacao("idle") # Travado no trânsito!

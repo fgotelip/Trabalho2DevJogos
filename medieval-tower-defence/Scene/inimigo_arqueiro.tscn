@@ -5,10 +5,10 @@
 [ext_resource type="Texture2D" uid="uid://mipqnsajcjvb" path="res://Arts/Tropas/Inimigos/Archer_Shoot.png" id="3_m2rb0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sid3l"]
-size = Vector2(73, 73)
+size = Vector2(80, 100)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_glams"]
-radius = 341.0528
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_glams"]
+size = Vector2(500, 150)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wv00g"]
 bg_color = Color(1, 0, 0, 1)
@@ -163,14 +163,14 @@ _data = {
 collision_layer = 2
 collision_mask = 15
 script = ExtResource("1_glams")
-velocidade = 150.0
+velocidade = 40.0
+vida = 60
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["inimigos"]]
 texture = ExtResource("2_glams")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -1.5)
 shape = SubResource("RectangleShape2D_sid3l")
 
 [node name="DetectorAtaque" type="Area2D" parent="."]
@@ -178,7 +178,7 @@ collision_layer = 0
 collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectorAtaque" groups=["inimigos"]]
-shape = SubResource("CircleShape2D_glams")
+shape = SubResource("RectangleShape2D_glams")
 
 [node name="TimerAtaque" type="Timer" parent="."]
 

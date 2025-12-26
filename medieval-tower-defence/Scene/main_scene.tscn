@@ -2237,11 +2237,11 @@ position = Vector2(-129, -254)
 [node name="Rotas" type="Node" parent="."]
 
 [node name="Rota11" type="Path2D" parent="Rotas"]
-position = Vector2(-10, 189)
+position = Vector2(-10, 186)
 curve = SubResource("Curve2D_c1vcm")
 
 [node name="Rota12" type="Path2D" parent="Rotas"]
-position = Vector2(-11, 132)
+position = Vector2(-11, 79)
 curve = SubResource("Curve2D_c1vcm")
 
 [node name="Rota13" type="Path2D" parent="Rotas"]
@@ -2312,27 +2312,20 @@ text = "Comprar Monge
 
 [node name="TropaMonge" parent="Unidades" instance=ExtResource("19_s6rbu")]
 position = Vector2(1629, -565)
-vida_maxima = 90
-poder_cura = 15
-intervalo_cura = 1.6
 
 [node name="TropaBarreira" parent="Unidades" instance=ExtResource("18_o1xxl")]
 position = Vector2(1255, -576)
-vida_maxima = 75
-dano = 30
-intervalo_ataque = 2.0
 
 [node name="TropaArqueiro" parent="Unidades" instance=ExtResource("17_jako7")]
 position = Vector2(715, -528)
-vida_maxima = 60
-dano = 15
 
 [node name="inimigoArqueiro" parent="Unidades" instance=ExtResource("16_5pd2f")]
 position = Vector2(-39, -558)
+valor_em_ouro = 150
 
 [node name="Inimigo_Warrior" parent="Unidades" instance=ExtResource("15_djn62")]
 position = Vector2(-531, -579)
-velocidade = 100.0
+valor_em_ouro = 100
 
 [node name="Flecha" parent="Unidades" instance=ExtResource("20_5pd2f")]
 position = Vector2(-792, -572)

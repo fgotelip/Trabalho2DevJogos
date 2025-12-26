@@ -5,13 +5,13 @@ extends Node2D
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
 #@onready var rotas = $Rotas.get_children() 
-@onready var rotas = [$Rotas/Rota11,$Rotas/Rota12]
+@onready var rotas = [$Rotas/Rota12,$Rotas/Rota11]
 @onready var base = $Base
 
 # --- ECONOMIA ---
-var custo_guerreiro: int = 50
-var custo_arqueiro: int = 75
-var custo_monge: int = 100
+var custo_guerreiro: int = 100
+var custo_arqueiro: int = 150
+var custo_monge: int = 500
 var ouro_atual: int = 10000000000 
 
 # --- CENAS (ALIADOS E INIMIGOS) ---

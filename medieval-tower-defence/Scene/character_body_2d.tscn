@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://vlelxueowe5c" path="res://Arts/Tropas/Inimigos/Warrior_Attack1.png" id="3_wv00g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_sid3l"]
-size = Vector2(73, 73)
+size = Vector2(90, 110)
 
 [sub_resource type="Animation" id="Animation_pp4s8"]
 length = 0.001
@@ -150,8 +150,8 @@ _data = {
 &"idle": SubResource("Animation_wv00g")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_wv00g"]
-radius = 46.69047
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wv00g"]
+size = Vector2(80, 100)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wv00g"]
 bg_color = Color(1, 0, 0, 1)
@@ -163,7 +163,9 @@ bg_color = Color(0, 1, 0, 1)
 collision_layer = 2
 collision_mask = 15
 script = ExtResource("1_yx0hs")
-velocidade = 200.0
+velocidade = 50.0
+vida = 90
+dano = 30
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_wv00g")
@@ -178,15 +180,17 @@ libraries = {
 &"": SubResource("AnimationLibrary_hnm5t")
 }
 autoplay = "atacando"
+speed_scale = 2.0
 
 [node name="DetectorAtaque" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectorAtaque" groups=["inimigos"]]
-shape = SubResource("CircleShape2D_wv00g")
+shape = SubResource("RectangleShape2D_wv00g")
 
 [node name="TimerAtaque" type="Timer" parent="."]
+wait_time = 2.0
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 offset_left = -25.0

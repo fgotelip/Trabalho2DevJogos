@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 
 [debug]
 
+shapes/navigation/2d/enable_edge_connections=false
 shapes/navigation/2d/enable_edge_lines=false
 shapes/navigation/2d/enable_geometry_face_random_color=false
 shapes/navigation/2d/enable_link_connections=false

@@ -134,8 +134,8 @@ _data = {
 &"parado": SubResource("Animation_vw84o")
 }
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_bllql"]
-radius = 50.24938
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bllql"]
+size = Vector2(90, 110)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bllql"]
 bg_color = Color(1, 0, 0, 1)
@@ -147,6 +147,9 @@ bg_color = Color(0, 1, 0, 1)
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_2y7b3")
+vida_maxima = 80
+dano = 20
+intervalo_ataque = 2.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_bllql")
@@ -166,7 +169,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AreaAlcance"]
-shape = SubResource("CircleShape2D_bllql")
+shape = SubResource("RectangleShape2D_bllql")
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
