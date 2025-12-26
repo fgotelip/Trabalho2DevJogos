@@ -4,8 +4,8 @@ extends Node2D
 @onready var tile_map = $Camada_Chao 
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
-#@onready var rotas = $Rotas.get_children() 
-@onready var rotas = [$Rotas/Rota12,$Rotas/Rota11]
+@onready var rotas = $Rotas.get_children() 
+#@onready var rotas = [$Rotas/Rota12,$Rotas/Rota11]
 @onready var base = $Base
 
 # --- ECONOMIA ---

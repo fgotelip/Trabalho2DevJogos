@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=4 uid="uid://c34ot4pxp8jxr"]
+[gd_scene load_steps=43 format=4 uid="uid://c34ot4pxp8jxr"]
 
 [ext_resource type="Script" uid="uid://dgbsd7i0naqqj" path="res://scripts/game_manager.gd" id="1_7riyq"]
 [ext_resource type="Texture2D" uid="uid://i8mqidxgrtvx" path="res://Arts/Tilemap_color1.png" id="2_k87s1"]
@@ -2141,39 +2141,51 @@ sources/11 = SubResource("TileSetAtlasSource_m35m6")
 sources/12 = SubResource("TileSetAtlasSource_qwutr")
 sources/13 = SubResource("TileSetAtlasSource_mo76n")
 
-[sub_resource type="Curve2D" id="Curve2D_c1vcm"]
+[sub_resource type="Curve2D" id="Curve2D_5pd2f"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 3433, 170, 0, 0, 0, 0, 1875, 166)
+"points": PackedVector2Array(0, 0, 0, 0, 3424, 160, 0, 0, 0, 0, 1864, 160)
 }
 point_count = 2
 
-[sub_resource type="Curve2D" id="Curve2D_kx01p"]
+[sub_resource type="Curve2D" id="Curve2D_jako7"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 1872, 164, 0, 0, 0, 0, 3373, 162)
+"points": PackedVector2Array(0, 0, 0, 0, 1776.0812, 2074.8184, 0, 0, 0, 0, 1776, 536)
 }
 point_count = 2
 
-[sub_resource type="Curve2D" id="Curve2D_q6wtm"]
+[sub_resource type="Curve2D" id="Curve2D_s6rbu"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 1872, 164, 0, 0, 0, 0, 3358, 163)
+"points": PackedVector2Array(0, 0, 0, 0, 1774.3201, 2063.343, 0, 0, 0, 0, 1776, 536)
 }
 point_count = 2
 
-[sub_resource type="Curve2D" id="Curve2D_djn62"]
+[sub_resource type="Curve2D" id="Curve2D_1u1ew"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 1872, 164, 0, 0, 0, 0, 3357, 167)
+"points": PackedVector2Array(0, 0, 0, 0, 1773.0334, 2050.7222, 0, 0, 0, 0, 1776, 536)
 }
 point_count = 2
 
-[sub_resource type="Curve2D" id="Curve2D_n7l00"]
+[sub_resource type="Curve2D" id="Curve2D_ug01c"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 1817, 1582, 0, 0, 0, 0, 1812, 105)
+"points": PackedVector2Array(0, 0, 0, 0, 1776.8428, 2021.6494, 0, 0, 0, 0, 1776, 536)
 }
 point_count = 2
 
-[sub_resource type="Curve2D" id="Curve2D_k87s1"]
+[sub_resource type="Curve2D" id="Curve2D_i0qoy"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, 1817, 1582, 0, 0, 0, 0, 1809.0801, 168)
+"points": PackedVector2Array(0, 0, 0, 0, 1773.3331, 2052.268, 0, 0, 0, 0, 1776, 536)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_gqcd2"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 1781.3246, 2037.1198, 0, 0, 0, 0, 1776, 536)
+}
+point_count = 2
+
+[sub_resource type="Curve2D" id="Curve2D_o1xxl"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -200, 472, 0, 0, 0, 0, 1344, 472)
 }
 point_count = 2
 
@@ -2220,11 +2232,11 @@ vida_maxima = 10000
 
 [node name="Castelo" parent="Base" index="0"]
 z_index = 1
-scale = Vector2(1.9218749, 2.0644531)
+scale = Vector2(1.8744776, 2.343839)
 
 [node name="CollisionPolygon2D" parent="Base" index="1"]
 z_index = 1
-scale = Vector2(1.003008, 1)
+scale = Vector2(1.0170636, 1.1693546)
 polygon = PackedVector2Array(-275.16467, 189, -245.16467, 187, -27.164673, 221, 48.835327, 217, 275.83533, 187, 266.83533, 72, 266.83533, -171, 285.83533, -353, -266.16467, -352, -256.16467, -75, -261.16467, 78)
 
 [node name="Casa1" parent="Base" index="2"]
@@ -2237,41 +2249,76 @@ position = Vector2(-129, -254)
 [node name="Rotas" type="Node" parent="."]
 
 [node name="Rota11" type="Path2D" parent="Rotas"]
-position = Vector2(-10, 186)
-curve = SubResource("Curve2D_c1vcm")
+scale = Vector2(0.9986019, 0.52469134)
+curve = SubResource("Curve2D_5pd2f")
 
 [node name="Rota12" type="Path2D" parent="Rotas"]
-position = Vector2(-11, 79)
-curve = SubResource("Curve2D_c1vcm")
+scale = Vector2(0.9993124, 1.2375)
+curve = SubResource("Curve2D_5pd2f")
 
 [node name="Rota13" type="Path2D" parent="Rotas"]
-position = Vector2(-18, 311)
-curve = SubResource("Curve2D_c1vcm")
+scale = Vector2(0.9992913, 1.55)
+curve = SubResource("Curve2D_5pd2f")
+
+[node name="Rota14" type="Path2D" parent="Rotas"]
+scale = Vector2(0.99964195, 2.1698112)
+curve = SubResource("Curve2D_5pd2f")
+
+[node name="Rota15" type="Path2D" parent="Rotas"]
+scale = Vector2(0.99893016, 2.5381992)
+curve = SubResource("Curve2D_5pd2f")
+
+[node name="Rota16" type="Path2D" parent="Rotas"]
+scale = Vector2(0.9991367, 3.152467)
+curve = SubResource("Curve2D_5pd2f")
 
 [node name="Rota21" type="Path2D" parent="Rotas"]
-position = Vector2(-2049, -4)
-curve = SubResource("Curve2D_kx01p")
+scale = Vector2(1.0224758, 0.99864167)
+curve = SubResource("Curve2D_jako7")
 
 [node name="Rota22" type="Path2D" parent="Rotas"]
-position = Vector2(-2039, 161)
-curve = SubResource("Curve2D_q6wtm")
+scale = Vector2(0.9693855, 1.0041957)
+curve = SubResource("Curve2D_s6rbu")
 
 [node name="Rota23" type="Path2D" parent="Rotas"]
-position = Vector2(-2045, 312)
-curve = SubResource("Curve2D_djn62")
+scale = Vector2(0.92045647, 1.0103757)
+curve = SubResource("Curve2D_1u1ew")
+
+[node name="Rota24" type="Path2D" parent="Rotas"]
+scale = Vector2(0.8824642, 1.0249057)
+curve = SubResource("Curve2D_ug01c")
+
+[node name="Rota25" type="Path2D" parent="Rotas"]
+scale = Vector2(0.825564, 1.0096147)
+curve = SubResource("Curve2D_i0qoy")
+
+[node name="Rota26" type="Path2D" parent="Rotas"]
+scale = Vector2(0.781441, 1.0171223)
+curve = SubResource("Curve2D_gqcd2")
 
 [node name="Rota31" type="Path2D" parent="Rotas"]
-position = Vector2(-394, 453)
-curve = SubResource("Curve2D_n7l00")
+scale = Vector2(0.9936631, 1.0796427)
+curve = SubResource("Curve2D_o1xxl")
 
 [node name="Rota32" type="Path2D" parent="Rotas"]
-position = Vector2(-3431.2222, 430)
-scale = Vector2(2.7777777, 1)
-curve = SubResource("Curve2D_k87s1")
+scale = Vector2(0.9918418, 0.86296403)
+curve = SubResource("Curve2D_o1xxl")
 
 [node name="Rota33" type="Path2D" parent="Rotas"]
-position = Vector2(-51, 447)
-curve = SubResource("Curve2D_n7l00")
+scale = Vector2(1, 0.756767)
+curve = SubResource("Curve2D_o1xxl")
+
+[node name="Rota34" type="Path2D" parent="Rotas"]
+scale = Vector2(1.0071238, 0.53164935)
+curve = SubResource("Curve2D_o1xxl")
+
+[node name="Rota35" type="Path2D" parent="Rotas"]
+scale = Vector2(0.9913891, 0.40758944)
+curve = SubResource("Curve2D_o1xxl")
+
+[node name="Rota36" type="Path2D" parent="Rotas"]
+scale = Vector2(0.9975092, 0.18398906)
+curve = SubResource("Curve2D_o1xxl")
 
 [node name="InterfaceUsuario" type="CanvasLayer" parent="."]
 
