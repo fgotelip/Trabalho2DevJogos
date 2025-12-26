@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c5tp5rq03ajxr"]
+[gd_scene load_steps=13 format=3 uid="uid://c5tp5rq03ajxr"]
 
 [ext_resource type="Script" uid="uid://dko3djmacy135" path="res://scripts/inimigo_arqueiro.gd" id="1_glams"]
 [ext_resource type="Texture2D" uid="uid://btoelibqexflf" path="res://Arts/Tropas/Inimigos/Archer_Run.png" id="2_glams"]
@@ -15,47 +15,6 @@ bg_color = Color(1, 0, 0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sid3l"]
 bg_color = Color(0, 1, 0, 1)
-
-[sub_resource type="Animation" id="Animation_ag6n7"]
-resource_name = "correndo"
-length = 0.3
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:texture")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [ExtResource("2_glams")]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:hframes")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [4]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Sprite2D:frame")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3]
-}
 
 [sub_resource type="Animation" id="Animation_safmi"]
 length = 0.001
@@ -136,17 +95,75 @@ tracks/2/keys = {
 "values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
 
+[sub_resource type="Animation" id="Animation_ag6n7"]
+resource_name = "correndo"
+length = 0.3
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("2_glams")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:hframes")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [4]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:frame")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_glams"]
+resource_name = "idle"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vymgl"]
 _data = {
 &"RESET": SubResource("Animation_safmi"),
 &"atacando": SubResource("Animation_iuvo4"),
-&"correndo": SubResource("Animation_ag6n7")
+&"correndo": SubResource("Animation_ag6n7"),
+&"idle": SubResource("Animation_glams")
 }
 
 [node name="inimigoArqueiro" type="CharacterBody2D" groups=["inimigos"]]
 collision_layer = 2
-collision_mask = 13
+collision_mask = 15
 script = ExtResource("1_glams")
+velocidade = 150.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["inimigos"]]
 texture = ExtResource("2_glams")
@@ -178,4 +195,3 @@ show_percentage = false
 libraries = {
 &"": SubResource("AnimationLibrary_vymgl")
 }
-autoplay = "correndo"

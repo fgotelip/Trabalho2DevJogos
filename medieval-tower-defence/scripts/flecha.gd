@@ -1,7 +1,7 @@
 extends Area2D
 
-var velocidade: float = 400.0
-var dano: int = 10
+@export var velocidade: float = 400.0
+@export var dano: int = 10
 var alvo_e_inimigo: bool = true 
 
 func _ready():

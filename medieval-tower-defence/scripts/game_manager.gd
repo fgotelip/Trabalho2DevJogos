@@ -4,7 +4,8 @@ extends Node2D
 @onready var tile_map = $Camada_Chao 
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
-@onready var rotas = $Rotas.get_children() 
+#@onready var rotas = $Rotas.get_children() 
+@onready var rotas = [$Rotas/Rota11,$Rotas/Rota12]
 @onready var base = $Base
 
 # --- ECONOMIA ---
@@ -38,20 +39,22 @@ func _process(_delta):
 
 	# ESPAÇO: SPAWN MISTO
 	if Input.is_action_just_pressed("ui_accept"):
-		spawnar_inimigos()
+		spawnar_inimigos(0)
+	if Input.is_action_just_pressed("ui_focus_next"):
+		spawnar_inimigos(1)
 
 	if tropa_para_construir != null:
 		atualizar_preview()
 
 # --- SPAWN DE INIMIGOS (ATUALIZADO) ---
-func spawnar_inimigos():
+func spawnar_inimigos(teste):
 	print("Iniciando onda mista!")
 	for rota in rotas:
 		# 50% de chance para cada um. 
 		# Se quiser mais guerreiros, faça: [inimigo_guerreiro_cena, inimigo_guerreiro_cena, inimigo_arqueiro_cena]
 		var lista_inimigos = [inimigo_guerreiro_cena, inimigo_arqueiro_cena]
-		var tipo_sorteado = lista_inimigos.pick_random()
-		
+		var tipo_sorteado = lista_inimigos[teste]
+		#var tipo_sorteado = inimigo_arqueiro_cena
 		spawnar_inimigo(rota, tipo_sorteado)
 
 func spawnar_inimigo(rota, cena_do_inimigo):
@@ -130,21 +133,46 @@ func _unhandled_input(event):
 			tentar_construir()
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			cancelar_construcao()
-
+		
 func tentar_construir():
 	if ouro_atual < custo_da_tropa_selecionada:
-		cancelar_construcao(); return
+		cancelar_construcao()
+		return
 
 	var mouse_pos = get_global_mouse_position()
 	var coord_grid = tile_map.local_to_map(mouse_pos)
+	
+	# Calcula a posição exata onde a tropa vai ficar (no centro do quadrado)
+	var posicao_final = tile_map.map_to_local(coord_grid)
+
+	# --- A MÁGICA DA COLISÃO COMEÇA AQUI ---
+	
+	# 1. Pegamos o estado físico do mundo atual
+	var mundo_fisico = get_world_2d().direct_space_state
+	
+	# 2. Criamos uma "pergunta" para a física (Query)
+	var parametros = PhysicsPointQueryParameters2D.new()
+	parametros.position = posicao_final # Onde queremos checar?
+	parametros.collide_with_bodies = true # Queremos detectar Corpos (StaticBody)? Sim.
+	parametros.collide_with_areas = false # Queremos detectar Areas? Não (opcional).
+	
+	# IMPORTANTE: Isso assume que suas tropas estão na Collision Layer 1
+	# Se estiverem em outra, mude aqui: parametros.collision_mask = 1 
+	
+	# 3. Fazemos a pergunta: "Quem está nesse ponto?"
+	var resultado = mundo_fisico.intersect_point(parametros)
+	
+
 	var dados_tile = tile_map.get_cell_tile_data(coord_grid)
 	
-	if dados_tile and dados_tile.get_custom_data("pode_construir"):
+	if dados_tile and dados_tile.get_custom_data("pode_construir") and resultado.size() == 0:
 		ouro_atual -= custo_da_tropa_selecionada
 		atualizar_interface_ouro()
+		
 		var nova_tropa = tropa_para_construir.instantiate()
-		nova_tropa.position = tile_map.map_to_local(coord_grid)
+		nova_tropa.position = posicao_final
 		add_child(nova_tropa)
+		
 		cancelar_construcao() 
 	else:
 		print("Terreno inválido!")

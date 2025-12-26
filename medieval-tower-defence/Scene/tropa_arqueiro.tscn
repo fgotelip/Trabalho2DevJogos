@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cnafa1sc2nka7" path="res://Arts/Tropas/Aliados/Archer_Idle.png" id="4_o15au"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2y7b3"]
-size = Vector2(69, 73)
+size = Vector2(80, 100)
 
 [sub_resource type="Animation" id="Animation_8jal3"]
 length = 0.001
@@ -154,7 +154,6 @@ texture = ExtResource("2_xweoh")
 hframes = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(3.5, -5.5)
 shape = SubResource("RectangleShape2D_2y7b3")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." groups=["aliados"]]
@@ -168,6 +167,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="AreaAlcance" groups=["aliados"]]
+visible = false
 shape = SubResource("CircleShape2D_k2phf")
 
 [node name="Timer" type="Timer" parent="."]

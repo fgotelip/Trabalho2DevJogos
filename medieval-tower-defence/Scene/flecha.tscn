@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://bia5bnf6jmxxi" path="res://Arts/Tropas/Aliados/Arrow.png" id="2_r7cu8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ecb8e"]
-size = Vector2(45, 18)
+size = Vector2(45, 2)
 
 [node name="Flecha" type="Area2D"]
 collision_layer = 0
@@ -15,5 +15,5 @@ script = ExtResource("1_qindt")
 texture = ExtResource("2_r7cu8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-0.5, 1)
+position = Vector2(-0.5, -1)
 shape = SubResource("RectangleShape2D_ecb8e")
