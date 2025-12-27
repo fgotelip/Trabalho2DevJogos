@@ -4,8 +4,8 @@ extends Node2D
 @onready var tile_map = $Camada_Chao 
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
-#@onready var rotas = $Rotas.get_children() 
-@onready var rotas = [$Rotas/Rota11]
+@onready var rotas = $Rotas.get_children() 
+#@onready var rotas = [$Rotas/Rota11]
 @onready var base = $Base
 
 # --- ECONOMIA ---
@@ -28,6 +28,9 @@ var tropa_para_construir = null
 var custo_da_tropa_selecionada: int = 0
 var sprite_preview = null 
 var preview_facing_right: bool = true
+var segurando_esq: bool = false
+var tempo_hold: float = 0.0
+const INTERVALO_HOLD: float = 0.2
 
 func _ready():
 	atualizar_interface_ouro()
@@ -46,6 +49,12 @@ func _process(_delta):
 
 	if tropa_para_construir != null:
 		atualizar_preview()
+		# Construção contínua enquanto segura botão esquerdo
+		if segurando_esq:
+			tempo_hold -= _delta
+			if tempo_hold <= 0.0:
+				tentar_construir(preview_facing_right)
+				tempo_hold = INTERVALO_HOLD
 
 	# ESC para cancelar construção
 	if Input.is_action_just_pressed("ui_cancel") and tropa_para_construir != null:
@@ -158,9 +167,14 @@ func _unhandled_input(event):
 		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
 			# Esquerdo: constrói usando a orientação do preview
 			tentar_construir(preview_facing_right)
+			segurando_esq = true
+			tempo_hold = INTERVALO_HOLD
 		elif event.button_index == MOUSE_BUTTON_RIGHT and tropa_para_construir != null:
 			# Direito: cancelar construção
 			cancelar_construcao()
+	elif event is InputEventMouseButton and not event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			segurando_esq = false
 	elif event is InputEventKey and event.pressed and not event.echo:
 		# ESC (ui_cancel) para cancelar
 		if event.keycode == KEY_ESCAPE and tropa_para_construir != null:
@@ -223,8 +237,7 @@ func tentar_construir(facing_right: bool = true):
 			if script_path.find("tropa_arqueiro.gd") != -1:
 				_aplicar_orientacao_alcance(nova_tropa, eh_vertical)
 		add_child(nova_tropa)
-		
-		cancelar_construcao() 
+		# Mantém seleção ativa para construir outra unidade
 	else:
 		print("Terreno inválido!")
 
@@ -243,3 +256,4 @@ func cancelar_construcao():
 	if sprite_preview != null:
 		sprite_preview.queue_free()
 		sprite_preview = null
+	segurando_esq = false

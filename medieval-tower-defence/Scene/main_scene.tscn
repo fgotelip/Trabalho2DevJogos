@@ -613,11 +613,7 @@ texture = ExtResource("2_k87s1")
 3:19/0/custom_data_0 = true
 12:19/0 = 0
 13:19/0 = 0
-13:19/0/custom_data_0 = true
-13:19/0/custom_data_1 = true
 14:19/0 = 0
-14:19/0/custom_data_0 = true
-14:19/0/custom_data_1 = true
 15:19/0 = 0
 20:19/0 = 0
 21:19/0 = 0
@@ -645,11 +641,7 @@ texture = ExtResource("2_k87s1")
 3:20/0/custom_data_0 = true
 12:20/0 = 0
 13:20/0 = 0
-13:20/0/custom_data_0 = true
-13:20/0/custom_data_1 = true
 14:20/0 = 0
-14:20/0/custom_data_0 = true
-14:20/0/custom_data_1 = true
 15:20/0 = 0
 20:20/0 = 0
 21:20/0 = 0
@@ -677,11 +669,7 @@ texture = ExtResource("2_k87s1")
 3:21/0/custom_data_0 = true
 12:21/0 = 0
 13:21/0 = 0
-13:21/0/custom_data_0 = true
-13:21/0/custom_data_1 = true
 14:21/0 = 0
-14:21/0/custom_data_0 = true
-14:21/0/custom_data_1 = true
 15:21/0 = 0
 20:21/0 = 0
 21:21/0 = 0
@@ -2231,9 +2219,9 @@ tile_set = SubResource("TileSet_gyfs4")
 position = Vector2(1600, 0)
 zoom = Vector2(0.5, 0.5)
 limit_left = -177
-limit_top = -95
+limit_top = -156
 limit_right = 3417
-limit_bottom = 2013
+limit_bottom = 1977
 limit_smoothed = true
 position_smoothing_enabled = true
 script = ExtResource("13_ug01c")
@@ -2338,9 +2326,8 @@ curve = SubResource("Curve2D_o1xxl")
 
 [node name="LabelOuro" type="Label" parent="InterfaceUsuario"]
 offset_left = 180.0
-offset_top = 2.0
 offset_right = 310.0
-offset_bottom = 38.0
+offset_bottom = 36.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_k87s1")
 text = "Ouro: 100"
 label_settings = SubResource("LabelSettings_k87s1")
@@ -2348,24 +2335,24 @@ uppercase = true
 
 [node name="Guerreiro" type="Button" parent="InterfaceUsuario"]
 offset_left = -1.0
-offset_top = -1.0
+offset_top = -5.0
 offset_right = 169.0
-offset_bottom = 30.0
+offset_bottom = 26.0
 text = "Comprar  Guerreiro"
 
 [node name="Arqueiro" type="Button" parent="InterfaceUsuario"]
 offset_left = -1.0
-offset_top = 67.0
+offset_top = 62.0
 offset_right = 169.0
-offset_bottom = 98.0
+offset_bottom = 93.0
 text = "Comprar Arqueiro
 "
 
 [node name="Monge" type="Button" parent="InterfaceUsuario"]
 offset_left = -1.0
-offset_top = 33.0
+offset_top = 29.0
 offset_right = 169.0
-offset_bottom = 64.0
+offset_bottom = 60.0
 text = "Comprar Monge
 "
 
@@ -2383,12 +2370,10 @@ position = Vector2(715, -528)
 [node name="inimigoArqueiro" parent="Unidades" instance=ExtResource("16_5pd2f")]
 position = Vector2(-39, -558)
 velocidade = 150.0
-dano = 10
 valor_em_ouro = 150
 
 [node name="Inimigo_Warrior" parent="Unidades" instance=ExtResource("15_djn62")]
 position = Vector2(-531, -579)
-velocidade = 50.0
 valor_em_ouro = 100
 
 [node name="Flecha" parent="Unidades" instance=ExtResource("20_5pd2f")]

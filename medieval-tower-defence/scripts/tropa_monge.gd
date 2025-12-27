@@ -8,6 +8,7 @@ extends StaticBody2D
 # --- ESTADO ---
 var pode_curar: bool = true
 var vida_atual: int
+var olhando_para_direita: bool = true
 
 # --- REFERÊNCIAS ---
 @onready var radar = $ShapeCast2D 
@@ -34,6 +35,7 @@ func _ready():
 	radar.target_position = Vector2.ZERO 
 	radar.enabled = true 
 	radar.max_results = 10 # Define quantos aliados no MÁXIMO ele pode curar de uma vez
+	olhando_para_direita = (scale.x >= 0)
 
 func _physics_process(_delta):
 	if pode_curar:
@@ -63,6 +65,8 @@ func escanear_e_curar_area():
 		# Verifica se precisa de cura
 		if aliado.has_method("receber_dano"):
 			if aliado.vida_atual < aliado.vida_maxima:
+				# Vira para quem vai curar
+				_virar_para_posicao(aliado.global_position)
 				
 				# --- APLICAÇÃO DA CURA ---
 				# Curamos direto aqui, sem 'return'
@@ -89,6 +93,13 @@ func _on_cooldown_acabou():
 	pode_curar = true
 	if anim_player.has_animation("idle"):
 		anim_player.play("idle")
+
+func _virar_para_posicao(pos: Vector2):
+	var dx = pos.x - global_position.x
+	if abs(dx) < 0.001:
+		return
+	olhando_para_direita = dx > 0.0
+	scale.x = abs(scale.x) if olhando_para_direita else -abs(scale.x)
 
 # --- LÓGICA DE VIDA DO PRÓPRIO MONGE ---
 func receber_dano(quantidade: int):
