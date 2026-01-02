@@ -7,14 +7,13 @@ extends Node2D
 @onready var label_orda = $InterfaceUsuario/LabelOrda
 @onready var label_timer = $InterfaceUsuario/LabelTimer
 @onready var rotas = $Rotas.get_children() 
-#@onready var rotas = [$Rotas/Rota11]
 @onready var base = $Base
 
 # --- ECONOMIA ---
 var custo_guerreiro: int = 100
 var custo_arqueiro: int = 150
 var custo_monge: int = 500
-var ouro_atual: int = 10000000000 
+var ouro_atual: int = 400 
 
 # --- CENAS (ALIADOS E INIMIGOS) ---
 var tropa_guerreiro_cena = preload("res://Scene/tropa_barreira.tscn") 
@@ -23,9 +22,9 @@ var tropa_monge_cena = preload("res://Scene/tropa_monge.tscn")
 
 # INIMIGOS
 var inimigo_guerreiro_cena = preload("res://Scene/character_body_2d.tscn") 
-var inimigo_arqueiro_cena = preload("res://Scene/inimigo_arqueiro.tscn") # Certifique-se que criou esta cena!
+var inimigo_arqueiro_cena = preload("res://Scene/inimigo_arqueiro.tscn")
 
-# --- CONTROLE ---
+# --- CONTROLE DE CONSTRUÇÃO ---
 var tropa_para_construir = null 
 var custo_da_tropa_selecionada: int = 0
 var sprite_preview = null 
@@ -34,7 +33,7 @@ var segurando_esq: bool = false
 var tempo_hold: float = 0.0
 const INTERVALO_HOLD: float = 0.2
 
-# --- SISTEMA DE ORDAS ---
+# --- SISTEMA DE ONDAS (WAVES) ---
 var orda_atual: int = 0
 var inimigos_vivos: int = 0
 var spawns_agendados: Array = []
@@ -44,6 +43,8 @@ var tempo_espera_orda: float = 0.0
 @export var duracao_orda: float = 75.0  # 1min 15seg
 @export var delay_entre_ordas: float = 15.0
 @export var total_ordas: int = 4
+
+# Configuração de Dificuldade
 @export var faixas_inimigos_por_orda: Array[Vector2i] = [
 	Vector2i(1, 3),
 	Vector2i(3, 5),
@@ -52,18 +53,32 @@ var tempo_espera_orda: float = 0.0
 ]
 @export var chance_arqueiro_por_orda: Array[float] = [0.5, 0.6, 0.6, 0.7]
 
+# Estado do Jogo
+var jogo_acabou: bool = false
+
 func _ready():
 	atualizar_interface_ouro()
 	atualizar_interface_orda()
+	
+	# --- CONEXÃO IMPORTANTE: GAME OVER ---
+	# Escuta o grito de socorro da base
+	if base.has_signal("base_destruida"):
+		if not base.base_destruida.is_connected(_on_game_over):
+			base.base_destruida.connect(_on_game_over)
+	
 	iniciar_proxima_orda()
 
 func _process(_delta):
+	# Se o jogo acabou, não processa inputs de compra nem ondas
+	if jogo_acabou:
+		return
+
 	# Teclas de Atalho de Compra
 	if Input.is_action_just_pressed("selecionar_tropa_1"): selecionar_guerreiro()
 	elif Input.is_action_just_pressed("selecionar_tropa_2"): selecionar_arqueiro()
 	elif Input.is_action_just_pressed("selecionar_tropa_3"): selecionar_monge()
 
-	# Sistema de ordas
+	# Sistema de Ondas
 	if aguardando_proxima_orda:
 		tempo_espera_orda -= _delta
 		atualizar_interface_timer(tempo_espera_orda, true)
@@ -73,6 +88,7 @@ func _process(_delta):
 		processar_orda(_delta)
 		atualizar_interface_timer(duracao_orda - tempo_orda, false)
 
+	# Sistema de Construção
 	if tropa_para_construir != null:
 		atualizar_preview()
 		# Construção contínua enquanto segura botão esquerdo
@@ -86,24 +102,90 @@ func _process(_delta):
 	if Input.is_action_just_pressed("ui_cancel") and tropa_para_construir != null:
 		cancelar_construcao()
 
-# --- SISTEMA DE ORDAS ---
+# --- LÓGICA DE FIM DE JOGO (GAME OVER / VITÓRIA) ---
+
+func _on_game_over():
+	if jogo_acabou: return 
+	jogo_acabou = true
+	
+	print("!!! A BASE CAIU !!!")
+	get_tree().paused = true # Pausa o jogo
+	
+	# Chama a função que cria o texto VERMELHO
+	exibir_tela_final("GAME OVER", Color.RED)
+
+func verificar_vitoria_total():
+	if orda_atual >= total_ordas and inimigos_vivos == 0:
+		jogo_acabou = true
+		print("!!! VITÓRIA !!!")
+		
+		# Chama a função com texto VERDE
+		exibir_tela_final("VITÓRIA!", Color.GREEN)
+
+# --- FUNÇÃO QUE CRIA A TELA FINAL (TEXTO + BOTÃO) ---
+func exibir_tela_final(texto_titulo: String, cor_titulo: Color):
+	var tela_size = get_viewport_rect().size
+	var centro_tela = tela_size / 2
+	
+	# 1. CRIA O TEXTO GIGANTE (LABEL)
+	var label = Label.new()
+	label.text = texto_titulo
+	label.modulate = cor_titulo
+	
+	# Configura tamanho da fonte (80px)
+	label.add_theme_font_size_override("font_size", 80)
+	
+	# Alinhamento
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	# Posiciona no centro (ajustando o pivô para ficar certinho)
+	label.size = Vector2(600, 100) # Tamanho da caixa de texto
+	label.position = centro_tela - (label.size / 2) - Vector2(0, 80) # Sobe 80px do centro
+	
+	# Adiciona na tela (UI)
+	ui.add_child(label)
+	
+	# 2. CRIA O BOTÃO DE REINICIAR (Abaixo do texto)
+	var btn = Button.new()
+	btn.text = "Jogar Novamente"
+	btn.size = Vector2(250, 60)
+	btn.position = centro_tela - (btn.size / 2) + Vector2(0, 50) # Desce 50px do centro
+	
+	# Estilo básico do botão
+	btn.modulate = Color(1, 1, 1, 0.9)
+	
+	# Conecta e configura
+	btn.pressed.connect(_on_reiniciar_pressed)
+	btn.process_mode = Node.PROCESS_MODE_ALWAYS # Funciona pausado
+	
+	ui.add_child(btn)
+
+func _on_reiniciar_pressed():
+	# Despausa o jogo antes de recarregar
+	get_tree().paused = false
+	get_tree().reload_current_scene()
+
+# --- SISTEMA DE ONDAS ---
+
 func iniciar_proxima_orda():
+	if orda_atual >= total_ordas:
+		return # Já acabou
+	
 	orda_atual += 1
-	if orda_atual > total_ordas:
-		print("Todas as ordas completadas!")
-		return
 	
 	aguardando_proxima_orda = false
 	tempo_orda = 0.0
 	spawns_agendados.clear()
 	
-	print("Iniciando Orda ", orda_atual)
+	print("Iniciando Onda ", orda_atual)
 	atualizar_interface_orda()
 	
 	# Configura parâmetros da orda (por rota)
 	var idx_orda: int = max(orda_atual - 1, 0)
 	var faixa_default: Vector2i = Vector2i(3, 5)
 	var chance_default: float = 0.5
+	
 	var faixa_orda: Vector2i = faixas_inimigos_por_orda[idx_orda] if idx_orda < faixas_inimigos_por_orda.size() else faixa_default
 	var chance_arqueiro: float = chance_arqueiro_por_orda[idx_orda] if idx_orda < chance_arqueiro_por_orda.size() else chance_default
 	
@@ -132,26 +214,17 @@ func iniciar_proxima_orda():
 				"spawnado": false
 			})
 
-	# Garante um spawn no início e outro no final em rotas aleatórias
+	# Garante spawns extras no início e fim
 	if rotas.size() > 0:
-		var rota_inicio = rotas[randi_range(0, rotas.size() - 1)]
-		var rota_final = rotas[randi_range(0, rotas.size() - 1)]
+		var rota_inicio = rotas.pick_random()
+		var rota_final = rotas.pick_random()
 		var cena_inicio = inimigo_arqueiro_cena if randf() < chance_arqueiro else inimigo_guerreiro_cena
 		var cena_final = inimigo_arqueiro_cena if randf() < chance_arqueiro else inimigo_guerreiro_cena
-		spawns_agendados.append({
-			"tempo": 0.2,
-			"cena": cena_inicio,
-			"rota": rota_inicio,
-			"spawnado": false
-		})
-		spawns_agendados.append({
-			"tempo": duracao_orda,
-			"cena": cena_final,
-			"rota": rota_final,
-			"spawnado": false
-		})
+		
+		spawns_agendados.append({"tempo": 0.2, "cena": cena_inicio, "rota": rota_inicio, "spawnado": false})
+		spawns_agendados.append({"tempo": duracao_orda, "cena": cena_final, "rota": rota_final, "spawnado": false})
 	
-	# Ordena por tempo
+	# Ordena tudo por tempo final
 	spawns_agendados.sort_custom(func(a, b): return a["tempo"] < b["tempo"])
 
 func processar_orda(delta: float):
@@ -167,7 +240,7 @@ func processar_orda(delta: float):
 			spawnar_inimigo(spawn_data["rota"], spawn_data["cena"])
 			spawn_data["spawnado"] = true
 	
-	# Verifica se a orda acabou (tempo completo + todos spawnados + sem inimigos vivos)
+	# Verifica se a onda acabou (tempo completo + todos spawnados + sem inimigos vivos)
 	if tempo_orda >= duracao_orda:
 		var todos_spawnados = true
 		for spawn_data in spawns_agendados:
@@ -176,9 +249,13 @@ func processar_orda(delta: float):
 				break
 		
 		if todos_spawnados and inimigos_vivos == 0:
-			print("Orda ", orda_atual, " concluída!")
-			aguardando_proxima_orda = true
-			tempo_espera_orda = delay_entre_ordas
+			if orda_atual < total_ordas:
+				print("Onda ", orda_atual, " concluída!")
+				aguardando_proxima_orda = true
+				tempo_espera_orda = delay_entre_ordas
+			else:
+				# Se foi a última onda, verifica vitória final
+				verificar_vitoria_total()
 
 func spawnar_inimigo(rota, cena_do_inimigo):
 	var novo_inimigo = cena_do_inimigo.instantiate()
@@ -196,7 +273,7 @@ func _on_inimigo_morreu(valor):
 	inimigos_vivos -= 1
 	receber_recompensa(valor)
 	
-	# Verifica se pode iniciar próxima orda
+	# Verifica se pode iniciar próxima onda IMEDIATAMENTE após matar o último
 	if inimigos_vivos == 0 and tempo_orda >= duracao_orda:
 		var todos_spawnados = true
 		for spawn_data in spawns_agendados:
@@ -205,9 +282,12 @@ func _on_inimigo_morreu(valor):
 				break
 		
 		if todos_spawnados:
-			print("Todos inimigos eliminados! Próxima orda em ", delay_entre_ordas, "s")
-			aguardando_proxima_orda = true
-			tempo_espera_orda = delay_entre_ordas
+			if orda_atual < total_ordas:
+				print("Todos inimigos eliminados! Próxima onda em ", delay_entre_ordas, "s")
+				aguardando_proxima_orda = true
+				tempo_espera_orda = delay_entre_ordas
+			else:
+				verificar_vitoria_total()
 
 # --- ECONOMIA E UI ---
 func verificar_saldo(custo) -> bool:
@@ -220,10 +300,7 @@ func atualizar_interface_ouro():
 
 func atualizar_interface_orda():
 	if label_orda:
-		if orda_atual > total_ordas:
-			label_orda.text = "VITÓRIA!"
-		else:
-			label_orda.text = "Orda: " + str(orda_atual) + "/" + str(total_ordas)
+		label_orda.text = "Onda: " + str(orda_atual) + "/" + str(total_ordas)
 
 func atualizar_interface_timer(tempo: float, eh_espera: bool):
 	if label_timer:
@@ -271,15 +348,12 @@ func criar_preview():
 	sprite_preview.modulate = Color(1, 1, 1, 0.5) 
 	sprite_preview.process_mode = Node.PROCESS_MODE_DISABLED
 
-	# Ajusta orientação do preview conforme clique usado para comprar
 	sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
 
-	# Mantém nós visuais, desativando colisões e detecções para o preview
 	for filho in sprite_preview.get_children():
 		if filho is CollisionShape2D:
 			filho.disabled = true
 		elif filho is Area2D:
-			# Desativa monitoramento para não interferir no preview
 			filho.set_deferred("monitoring", false)
 			filho.collision_layer = 0
 			filho.collision_mask = 0
@@ -295,36 +369,32 @@ func atualizar_preview():
 		var coord_grid = tile_map.local_to_map(mouse_pos)
 		sprite_preview.position = tile_map.map_to_local(coord_grid)
 
-		# Aplica orientação do alcance para tiles marcados como verticais
+		# Lógica de orientação vertical do alcance (para Arqueiros em muralhas)
 		var dados_tile = tile_map.get_cell_tile_data(coord_grid)
 		if dados_tile and sprite_preview.get_script() != null:
 			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
-			# Apenas para o preview do arqueiro
 			var script_path := str(sprite_preview.get_script().resource_path)
 			if script_path.find("tropa_arqueiro.gd") != -1:
 				_aplicar_orientacao_alcance(sprite_preview, eh_vertical)
 
-		# Garante espelhamento persistente do preview
 		sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
 
 func _unhandled_input(event):
+	if jogo_acabou: return # Trava input se morreu
+
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
-			# Esquerdo: constrói usando a orientação do preview
 			tentar_construir(preview_facing_right)
 			segurando_esq = true
 			tempo_hold = INTERVALO_HOLD
 		elif event.button_index == MOUSE_BUTTON_RIGHT and tropa_para_construir != null:
-			# Direito: cancelar construção
 			cancelar_construcao()
 	elif event is InputEventMouseButton and not event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			segurando_esq = false
 	elif event is InputEventKey and event.pressed and not event.echo:
-		# ESC (ui_cancel) para cancelar
 		if event.keycode == KEY_ESCAPE and tropa_para_construir != null:
 			cancelar_construcao()
-		# Setas esquerda/direita controlam orientação do preview
 		elif event.keycode == KEY_LEFT and tropa_para_construir != null:
 			preview_facing_right = false
 			if sprite_preview != null:
@@ -334,8 +404,6 @@ func _unhandled_input(event):
 			if sprite_preview != null:
 				sprite_preview.scale.x = abs(sprite_preview.scale.x)
 
-# (Removidos handlers gui_input; orientação agora é pelas setas ← →)
-
 func tentar_construir(facing_right: bool = true):
 	if ouro_atual < custo_da_tropa_selecionada:
 		cancelar_construcao()
@@ -343,50 +411,38 @@ func tentar_construir(facing_right: bool = true):
 
 	var mouse_pos = get_global_mouse_position()
 	var coord_grid = tile_map.local_to_map(mouse_pos)
-	
-	# Calcula a posição exata onde a tropa vai ficar (no centro do quadrado)
 	var posicao_final = tile_map.map_to_local(coord_grid)
 
-	# --- A MÁGICA DA COLISÃO COMEÇA AQUI ---
-	
-	# 1. Pegamos o estado físico do mundo atual
+	# --- VERIFICAÇÃO FÍSICA DE ESPAÇO OCUPADO ---
 	var mundo_fisico = get_world_2d().direct_space_state
-	
-	# 2. Criamos uma "pergunta" para a física (Query)
 	var parametros = PhysicsPointQueryParameters2D.new()
-	parametros.position = posicao_final # Onde queremos checar?
-	parametros.collide_with_bodies = true # Queremos detectar Corpos (StaticBody)? Sim.
-	parametros.collide_with_areas = false # Queremos detectar Areas? Não (opcional).
+	parametros.position = posicao_final
+	parametros.collide_with_bodies = true
+	parametros.collide_with_areas = false
 	
-	# IMPORTANTE: Isso assume que suas tropas estão na Collision Layer 1
-	# Se estiverem em outra, mude aqui: parametros.collision_mask = 1 
-	
-	# 3. Fazemos a pergunta: "Quem está nesse ponto?"
 	var resultado = mundo_fisico.intersect_point(parametros)
 	
-
 	var dados_tile = tile_map.get_cell_tile_data(coord_grid)
 	
+	# Só constrói se tile permitir E não tiver corpo físico no local
 	if dados_tile and dados_tile.get_custom_data("pode_construir") and resultado.size() == 0:
 		ouro_atual -= custo_da_tropa_selecionada
 		atualizar_interface_ouro()
 		
 		var nova_tropa = tropa_para_construir.instantiate()
 		nova_tropa.position = posicao_final
-		# Define orientação inicial (direita/esquerda)
 		nova_tropa.scale.x = abs(nova_tropa.scale.x) if facing_right else -abs(nova_tropa.scale.x)
-		# Ajusta orientação do alcance conforme tile
+		
 		if dados_tile and nova_tropa.get_script() != null:
 			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
 			var script_path := str(nova_tropa.get_script().resource_path)
 			if script_path.find("tropa_arqueiro.gd") != -1:
 				_aplicar_orientacao_alcance(nova_tropa, eh_vertical)
+				
 		add_child(nova_tropa)
-		# Mantém seleção ativa para construir outra unidade
 	else:
-		print("Terreno inválido!")
+		print("Construção bloqueada (Terreno inválido ou ocupado)!")
 
-# --- AUXILIAR: aplica rotação do AreaAlcance ---
 func _aplicar_orientacao_alcance(node_aliado: Node2D, eh_vertical: bool):
 	if node_aliado.has_node("AreaAlcance"):
 		var area: Node2D = node_aliado.get_node_or_null("AreaAlcance") as Node2D

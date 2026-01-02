@@ -30,14 +30,26 @@ var alvo_pendente_dano: Node2D = null
 
 func _ready():
 	motion_mode = CharacterBody2D.MOTION_MODE_FLOATING
+	
+	# --- APLICAÇÃO DA DIFICULDADE (INTEGRAÇÃO COM O MENU) ---
+	# Verifica se o Global existe para evitar erros caso rode a cena sozinha
+	if get_node_or_null("/root/Global"):
+		vida = int(vida * Global.multiplicador_vida)
+		dano = int(dano * Global.multiplicador_dano)
+		print("Dificuldade aplicada. Vida: ", vida, " Dano: ", dano)
+	
+	# Configurações iniciais
 	olhando_para_direita = (sprite_visual == null or not sprite_visual.flip_h)
+	
 	# Conecta fim de animação para aplicar dano pendente
 	if anim_player and not anim_player.animation_finished.is_connected(_on_animation_finished):
 		anim_player.animation_finished.connect(_on_animation_finished)
 	
-	barra_vida.max_value = vida
-	barra_vida.value = vida
-	barra_vida.show()
+	# Configura a barra de vida (AGORA COM O VALOR ATUALIZADO PELA DIFICULDADE)
+	if barra_vida:
+		barra_vida.max_value = vida
+		barra_vida.value = vida
+		barra_vida.show()
 	
 	timer_ataque.wait_time = intervalo_ataque
 	timer_ataque.timeout.connect(_on_timer_ataque_timeout)
@@ -53,8 +65,6 @@ func _physics_process(_delta):
 		return 
 
 	# 2. MOVIMENTO E ANIMAÇÃO
-	# Note que removi o "if anim... play(correndo)" daqui!
-	# Agora a função de mover decide a animação.
 	mover_pela_rota()
 	atualizar_orientacao()
 
@@ -84,7 +94,6 @@ func processar_combate() -> bool:
 			if pode_atacar:
 				atacar(corpo)
 			else:
-				# --- CORREÇÃO AQUI ---
 				# Só muda para 'idle' se a animação atual NÃO for 'atacando'.
 				# Isto deixa a animação do ataque terminar visualmente.
 				if anim_player.current_animation != "atacando":
@@ -99,12 +108,15 @@ func atacar(alvo):
 	timer_ataque.start()
 	alvo_pendente_dano = alvo
 	tocar_animacao("atacando")
-	print("POW! Inimigo bateu em: ", alvo.name)
+	# O print ajuda a saber se está funcionando, pode remover depois
+	# print("Inimigo tentando atacar: ", alvo.name)
 
 func _on_animation_finished(anim_name):
 	if anim_name == "atacando":
+		# Aplica o dano REAIS agora que a animação acabou
 		if is_instance_valid(alvo_pendente_dano) and alvo_pendente_dano.has_method("receber_dano"):
 			alvo_pendente_dano.receber_dano(dano)
+		
 		alvo_pendente_dano = null
 		# volta pro idle ao concluir ataque
 		tocar_animacao("idle")
@@ -112,7 +124,7 @@ func _on_animation_finished(anim_name):
 func _on_timer_ataque_timeout():
 	pode_atacar = true
 
-# --- MOVIMENTO CORRIGIDO (Lógica do GPS) ---
+# --- MOVIMENTO (Lógica do GPS) ---
 func mover_pela_rota():
 	# Define a direção baseada no caminho
 	var direcao = Vector2.ZERO
@@ -130,26 +142,19 @@ func mover_pela_rota():
 	# Define a intenção de velocidade
 	velocity = direcao * velocidade
 	
-	# --- AQUI ESTÁ A MÁGICA ---
-	# 1. Onde estou antes de tentar andar?
+	# Verifica se andou de verdade
 	var posicao_antes = global_position
-	
-	# 2. Tenta andar (física resolve colisões)
 	move_and_slide()
-	
-	# 3. Onde estou depois?
 	var distancia_percorrida = global_position.distance_to(posicao_antes)
 	
-	# 4. Decisão: Se andou mais que 0.5 pixels, corre. Se não, idle.
+	# Se andou mais que 0.6 pixels, corre. Se não, idle.
 	if distancia_percorrida > 0.6:
 		tocar_animacao("correndo")
 	else:
-		tocar_animacao("idle") # Travado no trânsito!
+		tocar_animacao("idle")
 
 # --- SETUP E VIDA ---
 func atualizar_orientacao():
-	# Usamos velocity.x aqui, mas como ele pode estar parado (0),
-	# a orientação não vai mudar sozinha quando parar. Isso é bom.
 	if velocity.x != 0 and sprite_visual:
 		sprite_visual.flip_h = velocity.x < 0
 		olhando_para_direita = not sprite_visual.flip_h
@@ -174,11 +179,14 @@ func definir_rota(path_2d: Path2D, base_alvo: Node2D):
 
 func receber_dano(quantidade: int):
 	vida -= quantidade
-	barra_vida.value = vida
+	
+	if barra_vida:
+		barra_vida.value = vida
+		
 	if vida <= 0:
 		morrer()
 
 func morrer():
-	print("Inimigo derrotado!")
+	# print("Inimigo derrotado!")
 	inimigo_morreu.emit(valor_em_ouro)
 	queue_free()

@@ -1,0 +1,84 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjd2y64meofmb"]
+
+[ext_resource type="Script" uid="uid://dimr3f5ym5otm" path="res://scripts/menu_inicial.gd" id="1_j7u74"]
+
+[node name="MenuInicial" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_j7u74")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.75
+anchor_bottom = 16.175
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0.11509653, 1)
+metadata/_edit_use_anchors_ = true
+metadata/_edit_lock_ = true
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 382.0
+offset_top = 176.0
+offset_right = 737.0
+offset_bottom = 218.0
+theme_override_font_sizes/font_size = 30
+text = "Medieval Tower Defence"
+
+[node name="ContainerPrincipal" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 9.55
+anchor_top = 4.3
+anchor_right = 19.798
+anchor_bottom = 12.063001
+offset_left = 54.0
+offset_top = 97.0
+offset_right = -72.920044
+offset_bottom = -76.52002
+
+[node name="BotaoIniciar" type="Button" parent="ContainerPrincipal"]
+layout_mode = 2
+text = "Iniciar"
+
+[node name="BotaoSair" type="Button" parent="ContainerPrincipal"]
+layout_mode = 2
+text = "Sair"
+
+[node name="ContainerDificuldade" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 28.775002
+anchor_bottom = 16.225
+offset_left = 367.0
+offset_top = 234.0
+offset_right = -403.0
+offset_bottom = -259.0
+
+[node name="BtnFacil" type="Button" parent="ContainerDificuldade"]
+layout_mode = 2
+text = "Facil"
+
+[node name="BtnNormal" type="Button" parent="ContainerDificuldade"]
+layout_mode = 2
+text = "Normal"
+
+[node name="BtnDificil" type="Button" parent="ContainerDificuldade"]
+layout_mode = 2
+text = "Dificil"
+
+[node name="BtnVoltar" type="Button" parent="ContainerDificuldade"]
+layout_mode = 2
+text = "Voltar"
+
+[connection signal="pressed" from="ContainerPrincipal/BotaoIniciar" to="." method="_on_botao_iniciar_pressed"]
+[connection signal="pressed" from="ContainerPrincipal/BotaoSair" to="." method="_on_botao_sair_pressed"]
+[connection signal="pressed" from="ContainerDificuldade/BtnFacil" to="." method="_on_btn_facil_pressed"]
+[connection signal="pressed" from="ContainerDificuldade/BtnNormal" to="." method="_on_btn_normal_pressed"]
+[connection signal="pressed" from="ContainerDificuldade/BtnDificil" to="." method="_on_btn_dificil_pressed"]
+[connection signal="pressed" from="ContainerDificuldade/BtnVoltar" to="." method="_on_btn_voltar_pressed"]
