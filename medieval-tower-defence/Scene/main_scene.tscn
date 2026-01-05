@@ -2386,19 +2386,20 @@ label_settings = SubResource("LabelSettings_k87s1")
 uppercase = true
 
 [node name="LabelOrda" type="Label" parent="InterfaceUsuario"]
-offset_left = 957.0
-offset_right = 1079.0
-offset_bottom = 36.0
+offset_left = 1021.0
+offset_top = 133.0
+offset_right = 1143.0
+offset_bottom = 169.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_k87s1")
 text = "Orda: 1/4"
 label_settings = SubResource("LabelSettings_k87s1")
 uppercase = true
 
 [node name="LabelTimer" type="Label" parent="InterfaceUsuario"]
-offset_left = 934.0
-offset_top = 47.0
-offset_right = 1083.0
-offset_bottom = 83.0
+offset_left = 995.0
+offset_top = 184.0
+offset_right = 1144.0
+offset_bottom = 220.0
 theme_override_styles/normal = SubResource("StyleBoxFlat_k87s1")
 text = "Tempo: 1:15"
 label_settings = SubResource("LabelSettings_k87s1")

@@ -1,0 +1,88 @@
+[gd_scene load_steps=14 format=3 uid="uid://b4rqwp1iuo1lt"]
+
+[ext_resource type="Texture2D" uid="uid://detthdgcxv542" path="res://Arts/Tropas/Inimigos/Explosion_02.png" id="1_yly8k"]
+[ext_resource type="Script" uid="uid://cng0g1qgxn7je" path="res://scripts/explosao.gd" id="2_31cg6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uuidt"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3j63q"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x7a84"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ni6tc"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ryglq"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(768, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tl1wq"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(960, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w2m8m"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(1152, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e7h6y"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(1344, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0gjlt"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(1536, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vgvac"]
+atlas = ExtResource("1_yly8k")
+region = Rect2(1728, 0, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4y415"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uuidt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3j63q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x7a84")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ni6tc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ryglq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tl1wq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w2m8m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e7h6y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0gjlt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vgvac")
+}],
+"loop": false,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="explosao" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_4y415")
+frame = 9
+frame_progress = 1.0
+script = ExtResource("2_31cg6")

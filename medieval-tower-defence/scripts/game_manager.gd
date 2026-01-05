@@ -1,6 +1,5 @@
 extends Node2D
 
-# --- REFERÊNCIAS ---
 @onready var tile_map = $Camada_Chao 
 @onready var ui = $InterfaceUsuario 
 @onready var label_ouro = $InterfaceUsuario/LabelOuro 
@@ -9,22 +8,18 @@ extends Node2D
 @onready var rotas = $Rotas.get_children() 
 @onready var base = $Base
 
-# --- ECONOMIA ---
 var custo_guerreiro: int = 100
 var custo_arqueiro: int = 150
-var custo_monge: int = 500
+var custo_monge: int = 350
 var ouro_atual: int = 400 
 
-# --- CENAS (ALIADOS E INIMIGOS) ---
 var tropa_guerreiro_cena = preload("res://Scene/tropa_barreira.tscn") 
 var tropa_arqueiro_cena = preload("res://Scene/tropa_arqueiro.tscn")
 var tropa_monge_cena = preload("res://Scene/tropa_monge.tscn")
 
-# INIMIGOS
-var inimigo_guerreiro_cena = preload("res://Scene/character_body_2d.tscn") 
+var inimigo_guerreiro_cena = preload("res://Scene/inimigo_guerreiro.tscn") 
 var inimigo_arqueiro_cena = preload("res://Scene/inimigo_arqueiro.tscn")
 
-# --- CONTROLE DE CONSTRUÇÃO ---
 var tropa_para_construir = null 
 var custo_da_tropa_selecionada: int = 0
 var sprite_preview = null 
@@ -33,52 +28,51 @@ var segurando_esq: bool = false
 var tempo_hold: float = 0.0
 const INTERVALO_HOLD: float = 0.2
 
-# --- SISTEMA DE ONDAS (WAVES) ---
 var orda_atual: int = 0
 var inimigos_vivos: int = 0
 var spawns_agendados: Array = []
 var tempo_orda: float = 0.0
 var aguardando_proxima_orda: bool = false
 var tempo_espera_orda: float = 0.0
-@export var duracao_orda: float = 75.0  # 1min 15seg
+
+@export var duracao_orda: float = 75.0 
 @export var delay_entre_ordas: float = 15.0
 @export var total_ordas: int = 4
 
-# Configuração de Dificuldade
 @export var faixas_inimigos_por_orda: Array[Vector2i] = [
-	Vector2i(1, 3),
-	Vector2i(3, 5),
-	Vector2i(5, 7),
+	Vector2i(1, 3), 
+	Vector2i(3, 5), 
+	Vector2i(5, 7), 
 	Vector2i(9, 11)
 ]
 @export var chance_arqueiro_por_orda: Array[float] = [0.5, 0.6, 0.6, 0.7]
 
-# Estado do Jogo
 var jogo_acabou: bool = false
+var btn_mute: Button = null
 
 func _ready():
 	atualizar_interface_ouro()
 	atualizar_interface_orda()
 	
-	# --- CONEXÃO IMPORTANTE: GAME OVER ---
-	# Escuta o grito de socorro da base
 	if base.has_signal("base_destruida"):
 		if not base.base_destruida.is_connected(_on_game_over):
 			base.base_destruida.connect(_on_game_over)
 	
+	criar_botao_mute()
+	
 	iniciar_proxima_orda()
 
 func _process(_delta):
-	# Se o jogo acabou, não processa inputs de compra nem ondas
 	if jogo_acabou:
 		return
 
-	# Teclas de Atalho de Compra
-	if Input.is_action_just_pressed("selecionar_tropa_1"): selecionar_guerreiro()
-	elif Input.is_action_just_pressed("selecionar_tropa_2"): selecionar_arqueiro()
-	elif Input.is_action_just_pressed("selecionar_tropa_3"): selecionar_monge()
+	if Input.is_action_just_pressed("selecionar_tropa_1"):
+		selecionar_guerreiro()
+	elif Input.is_action_just_pressed("selecionar_tropa_2"):
+		selecionar_arqueiro()
+	elif Input.is_action_just_pressed("selecionar_tropa_3"):
+		selecionar_monge()
 
-	# Sistema de Ondas
 	if aguardando_proxima_orda:
 		tempo_espera_orda -= _delta
 		atualizar_interface_timer(tempo_espera_orda, true)
@@ -88,133 +82,142 @@ func _process(_delta):
 		processar_orda(_delta)
 		atualizar_interface_timer(duracao_orda - tempo_orda, false)
 
-	# Sistema de Construção
 	if tropa_para_construir != null:
 		atualizar_preview()
-		# Construção contínua enquanto segura botão esquerdo
+		
 		if segurando_esq:
 			tempo_hold -= _delta
 			if tempo_hold <= 0.0:
 				tentar_construir(preview_facing_right)
 				tempo_hold = INTERVALO_HOLD
 
-	# ESC para cancelar construção
 	if Input.is_action_just_pressed("ui_cancel") and tropa_para_construir != null:
 		cancelar_construcao()
 
-# --- LÓGICA DE FIM DE JOGO (GAME OVER / VITÓRIA) ---
+func criar_botao_mute():
+	btn_mute = Button.new()
+	
+	if Global.esta_mutado:
+		btn_mute.text = "SOM: OFF"
+		btn_mute.modulate = Color(1, 0.5, 0.5)
+	else:
+		btn_mute.text = "SOM: ON"
+		btn_mute.modulate = Color(0.5, 1, 0.5)
+		
+	btn_mute.size = Vector2(100, 40)
+	var tela_size = get_viewport_rect().size
+	btn_mute.position = Vector2(tela_size.x - 120, 20)
+	
+	btn_mute.pressed.connect(_on_mute_pressed)
+	ui.add_child(btn_mute)
+
+func _on_mute_pressed():
+	var esta_mudo = Global.alternar_som()
+	
+	if esta_mudo:
+		btn_mute.text = "SOM: OFF"
+		btn_mute.modulate = Color(1, 0.5, 0.5)
+	else:
+		btn_mute.text = "SOM: ON"
+		btn_mute.modulate = Color(0.5, 1, 0.5)
 
 func _on_game_over():
-	if jogo_acabou: return 
+	if jogo_acabou:
+		return 
+		
 	jogo_acabou = true
-	
 	print("!!! A BASE CAIU !!!")
-	get_tree().paused = true # Pausa o jogo
+	get_tree().paused = true 
 	
-	# Chama a função que cria o texto VERMELHO
-	exibir_tela_final("GAME OVER", Color.RED)
+	exibir_tela_final("GAME OVER", Color.RED, false)
 
 func verificar_vitoria_total():
 	if orda_atual >= total_ordas and inimigos_vivos == 0:
 		jogo_acabou = true
 		print("!!! VITÓRIA !!!")
 		
-		# Chama a função com texto VERDE
-		exibir_tela_final("VITÓRIA!", Color.GREEN)
+		exibir_tela_final("VITÓRIA!", Color.GREEN, true)
 
-# --- FUNÇÃO QUE CRIA A TELA FINAL (TEXTO + BOTÃO) ---
-func exibir_tela_final(texto_titulo: String, cor_titulo: Color):
+func exibir_tela_final(texto_titulo: String, cor_titulo: Color, mostrar_creditos: bool = false):
+	if btn_mute:
+		btn_mute.hide()
+	
 	var tela_size = get_viewport_rect().size
 	var centro_tela = tela_size / 2
 	
-	# 1. CRIA O TEXTO GIGANTE (LABEL)
 	var label = Label.new()
 	label.text = texto_titulo
 	label.modulate = cor_titulo
-	
-	# Configura tamanho da fonte (80px)
 	label.add_theme_font_size_override("font_size", 80)
-	
-	# Alinhamento
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	
-	# Posiciona no centro (ajustando o pivô para ficar certinho)
-	label.size = Vector2(600, 100) # Tamanho da caixa de texto
-	label.position = centro_tela - (label.size / 2) - Vector2(0, 80) # Sobe 80px do centro
-	
-	# Adiciona na tela (UI)
+	label.size = Vector2(600, 100)
+	label.position = centro_tela - (label.size / 2) - Vector2(0, 100) 
 	ui.add_child(label)
 	
-	# 2. CRIA O BOTÃO DE REINICIAR (Abaixo do texto)
-	var btn = Button.new()
-	btn.text = "Jogar Novamente"
-	btn.size = Vector2(250, 60)
-	btn.position = centro_tela - (btn.size / 2) + Vector2(0, 50) # Desce 50px do centro
+	var btn_reiniciar = Button.new()
+	btn_reiniciar.text = "Jogar Novamente"
+	btn_reiniciar.size = Vector2(250, 60)
+	btn_reiniciar.position = centro_tela - (btn_reiniciar.size / 2)
 	
-	# Estilo básico do botão
-	btn.modulate = Color(1, 1, 1, 0.9)
-	
-	# Conecta e configura
-	btn.pressed.connect(_on_reiniciar_pressed)
-	btn.process_mode = Node.PROCESS_MODE_ALWAYS # Funciona pausado
-	
-	ui.add_child(btn)
+	btn_reiniciar.pressed.connect(_on_reiniciar_pressed)
+	btn_reiniciar.process_mode = Node.PROCESS_MODE_ALWAYS 
+	ui.add_child(btn_reiniciar)
+
+	if mostrar_creditos:
+		var btn_creditos = Button.new()
+		btn_creditos.text = "Ver Créditos"
+		btn_creditos.size = Vector2(250, 60)
+		btn_creditos.position = btn_reiniciar.position + Vector2(0, 70) 
+		
+		btn_creditos.pressed.connect(_ir_para_creditos)
+		btn_creditos.process_mode = Node.PROCESS_MODE_ALWAYS
+		ui.add_child(btn_creditos)
 
 func _on_reiniciar_pressed():
-	# Despausa o jogo antes de recarregar
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 
-# --- SISTEMA DE ONDAS ---
+func _ir_para_creditos():
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://Scene/creditos.tscn")
 
 func iniciar_proxima_orda():
 	if orda_atual >= total_ordas:
-		return # Já acabou
+		return
 	
 	orda_atual += 1
-	
 	aguardando_proxima_orda = false
 	tempo_orda = 0.0
 	spawns_agendados.clear()
 	
-	print("Iniciando Onda ", orda_atual)
 	atualizar_interface_orda()
-	
-	# Configura parâmetros da orda (por rota)
+
 	var idx_orda: int = max(orda_atual - 1, 0)
 	var faixa_default: Vector2i = Vector2i(3, 5)
 	var chance_default: float = 0.5
 	
 	var faixa_orda: Vector2i = faixas_inimigos_por_orda[idx_orda] if idx_orda < faixas_inimigos_por_orda.size() else faixa_default
 	var chance_arqueiro: float = chance_arqueiro_por_orda[idx_orda] if idx_orda < chance_arqueiro_por_orda.size() else chance_default
-	
-	# Agenda spawns para cada rota
+
 	for rota in rotas:
 		var num_inimigos_nesta_rota = randi_range(faixa_orda.x, faixa_orda.y)
-		
-		# Gera tempos aleatórios para esta rota
 		var tempos_spawn_rota: Array = []
-		for _i in range(num_inimigos_nesta_rota):
-			var tempo_aleatorio = randf_range(1.0, duracao_orda - 1.0)
-			tempos_spawn_rota.append(tempo_aleatorio)
 		
-		# Ordena os tempos para spawnar em ordem crescente
+		for _i in range(num_inimigos_nesta_rota):
+			tempos_spawn_rota.append(randf_range(1.0, duracao_orda - 1.0))
+		
 		tempos_spawn_rota.sort()
 		
-		# Cria os spawns agendados
 		for tempo_spawn in tempos_spawn_rota:
-			# Escolhe tipo de inimigo
 			var cena_inimigo = inimigo_arqueiro_cena if randf() < chance_arqueiro else inimigo_guerreiro_cena
-			
 			spawns_agendados.append({
-				"tempo": tempo_spawn,
-				"cena": cena_inimigo,
-				"rota": rota,
+				"tempo": tempo_spawn, 
+				"cena": cena_inimigo, 
+				"rota": rota, 
 				"spawnado": false
 			})
 
-	# Garante spawns extras no início e fim
 	if rotas.size() > 0:
 		var rota_inicio = rotas.pick_random()
 		var rota_final = rotas.pick_random()
@@ -224,23 +227,19 @@ func iniciar_proxima_orda():
 		spawns_agendados.append({"tempo": 0.2, "cena": cena_inicio, "rota": rota_inicio, "spawnado": false})
 		spawns_agendados.append({"tempo": duracao_orda, "cena": cena_final, "rota": rota_final, "spawnado": false})
 	
-	# Ordena tudo por tempo final
 	spawns_agendados.sort_custom(func(a, b): return a["tempo"] < b["tempo"])
 
 func processar_orda(delta: float):
-	# Só avança o tempo se ainda não chegou no limite
 	if tempo_orda < duracao_orda:
 		tempo_orda += delta
 		if tempo_orda > duracao_orda:
 			tempo_orda = duracao_orda
-	
-	# Processa spawns agendados
+
 	for spawn_data in spawns_agendados:
 		if not spawn_data["spawnado"] and tempo_orda >= spawn_data["tempo"]:
 			spawnar_inimigo(spawn_data["rota"], spawn_data["cena"])
 			spawn_data["spawnado"] = true
 	
-	# Verifica se a onda acabou (tempo completo + todos spawnados + sem inimigos vivos)
 	if tempo_orda >= duracao_orda:
 		var todos_spawnados = true
 		for spawn_data in spawns_agendados:
@@ -254,7 +253,6 @@ func processar_orda(delta: float):
 				aguardando_proxima_orda = true
 				tempo_espera_orda = delay_entre_ordas
 			else:
-				# Se foi a última onda, verifica vitória final
 				verificar_vitoria_total()
 
 func spawnar_inimigo(rota, cena_do_inimigo):
@@ -272,31 +270,29 @@ func spawnar_inimigo(rota, cena_do_inimigo):
 func _on_inimigo_morreu(valor):
 	inimigos_vivos -= 1
 	receber_recompensa(valor)
-	
-	# Verifica se pode iniciar próxima onda IMEDIATAMENTE após matar o último
 	if inimigos_vivos == 0 and tempo_orda >= duracao_orda:
 		var todos_spawnados = true
 		for spawn_data in spawns_agendados:
 			if not spawn_data["spawnado"]:
 				todos_spawnados = false
 				break
-		
 		if todos_spawnados:
 			if orda_atual < total_ordas:
-				print("Todos inimigos eliminados! Próxima onda em ", delay_entre_ordas, "s")
 				aguardando_proxima_orda = true
 				tempo_espera_orda = delay_entre_ordas
 			else:
 				verificar_vitoria_total()
 
-# --- ECONOMIA E UI ---
 func verificar_saldo(custo) -> bool:
-	if ouro_atual >= custo: return true
+	if ouro_atual >= custo:
+		return true
+		
 	print("Ouro insuficiente!")
 	return false
 
 func atualizar_interface_ouro():
-	if label_ouro: label_ouro.text = "Ouro: " + str(ouro_atual)
+	if label_ouro:
+		label_ouro.text = "Ouro: " + str(ouro_atual)
 
 func atualizar_interface_orda():
 	if label_orda:
@@ -307,6 +303,7 @@ func atualizar_interface_timer(tempo: float, eh_espera: bool):
 		var minutos = int(tempo) / 60
 		var segundos = int(tempo) % 60
 		var texto_tempo = "%d:%02d" % [minutos, segundos]
+		
 		if eh_espera:
 			label_timer.text = "Próxima: " + texto_tempo
 		else:
@@ -316,7 +313,6 @@ func receber_recompensa(valor):
 	ouro_atual += valor
 	atualizar_interface_ouro()
 
-# --- SELEÇÃO DE TROPAS ---
 func selecionar_guerreiro():
 	if verificar_saldo(custo_guerreiro):
 		configurar_construcao(tropa_guerreiro_cena, custo_guerreiro)
@@ -330,26 +326,33 @@ func selecionar_monge():
 		configurar_construcao(tropa_monge_cena, custo_monge)
 
 func configurar_construcao(cena, custo):
-	print("Selecionado. Custo: ", custo)
 	tropa_para_construir = cena
 	custo_da_tropa_selecionada = custo
 	criar_preview()
 
-# --- CONEXÃO DOS BOTÕES (UI) ---
-func _on_guerreiro_pressed() -> void: selecionar_guerreiro()
-func _on_arqueiro_pressed() -> void: selecionar_arqueiro()
-func _on_monge_pressed() -> void: selecionar_monge()
+func _on_guerreiro_pressed() -> void:
+	selecionar_guerreiro()
+	
+func _on_arqueiro_pressed() -> void:
+	selecionar_arqueiro()
+	
+func _on_monge_pressed() -> void:
+	selecionar_monge()
 
-# --- CONSTRUÇÃO (PREVIEW E CLIQUE) ---
 func criar_preview():
-	if sprite_preview != null: sprite_preview.queue_free()
+	if sprite_preview != null:
+		sprite_preview.queue_free()
+		
 	sprite_preview = tropa_para_construir.instantiate()
 	add_child(sprite_preview)
 	sprite_preview.modulate = Color(1, 1, 1, 0.5) 
 	sprite_preview.process_mode = Node.PROCESS_MODE_DISABLED
-
-	sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
-
+	
+	if preview_facing_right:
+		sprite_preview.scale.x = abs(sprite_preview.scale.x)
+	else:
+		sprite_preview.scale.x = -abs(sprite_preview.scale.x)
+		
 	for filho in sprite_preview.get_children():
 		if filho is CollisionShape2D:
 			filho.disabled = true
@@ -369,36 +372,82 @@ func atualizar_preview():
 		var coord_grid = tile_map.local_to_map(mouse_pos)
 		sprite_preview.position = tile_map.map_to_local(coord_grid)
 
-		# Lógica de orientação vertical do alcance (para Arqueiros em muralhas)
 		var dados_tile = tile_map.get_cell_tile_data(coord_grid)
 		if dados_tile and sprite_preview.get_script() != null:
 			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
 			var script_path := str(sprite_preview.get_script().resource_path)
+			
 			if script_path.find("tropa_arqueiro.gd") != -1:
 				_aplicar_orientacao_alcance(sprite_preview, eh_vertical)
-
-		sprite_preview.scale.x = abs(sprite_preview.scale.x) if preview_facing_right else -abs(sprite_preview.scale.x)
+		
+		if preview_facing_right:
+			sprite_preview.scale.x = abs(sprite_preview.scale.x)
+		else:
+			sprite_preview.scale.x = -abs(sprite_preview.scale.x)
 
 func _unhandled_input(event):
-	if jogo_acabou: return # Trava input se morreu
+	if jogo_acabou:
+		return
+
+	if event.is_action_pressed("cheat_vitoria"):
+		print("CHEAT ATIVADO: Vitória Instantânea!")
+		jogo_acabou = true
+		exibir_tela_final("VITÓRIA (DEBUG)!", Color.GREEN, true)
 
 	if event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
 			tentar_construir(preview_facing_right)
 			segurando_esq = true
 			tempo_hold = INTERVALO_HOLD
+			
 		elif event.button_index == MOUSE_BUTTON_RIGHT and tropa_para_construir != null:
 			cancelar_construcao()
+			
 	elif event is InputEventMouseButton and not event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			segurando_esq = false
+			
 	elif event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE and tropa_para_construir != null:
 			cancelar_construcao()
+			
 		elif event.keycode == KEY_LEFT and tropa_para_construir != null:
 			preview_facing_right = false
 			if sprite_preview != null:
 				sprite_preview.scale.x = -abs(sprite_preview.scale.x)
+				
+		elif event.keycode == KEY_RIGHT and tropa_para_construir != null:
+			preview_facing_right = true
+			if sprite_preview != null:
+				sprite_preview.scale.x = abs(sprite_preview.scale.x)
+
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ASTERISK:
+		print("CHEAT ATIVADO: Vitória Instantânea!")
+		jogo_acabou = true
+		exibir_tela_final("VITÓRIA (DEBUG)!", Color.GREEN, true)
+
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT and tropa_para_construir != null:
+			tentar_construir(preview_facing_right)
+			segurando_esq = true
+			tempo_hold = INTERVALO_HOLD
+			
+		elif event.button_index == MOUSE_BUTTON_RIGHT and tropa_para_construir != null:
+			cancelar_construcao()
+			
+	elif event is InputEventMouseButton and not event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			segurando_esq = false
+			
+	elif event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE and tropa_para_construir != null:
+			cancelar_construcao()
+			
+		elif event.keycode == KEY_LEFT and tropa_para_construir != null:
+			preview_facing_right = false
+			if sprite_preview != null:
+				sprite_preview.scale.x = -abs(sprite_preview.scale.x)
+				
 		elif event.keycode == KEY_RIGHT and tropa_para_construir != null:
 			preview_facing_right = true
 			if sprite_preview != null:
@@ -412,8 +461,7 @@ func tentar_construir(facing_right: bool = true):
 	var mouse_pos = get_global_mouse_position()
 	var coord_grid = tile_map.local_to_map(mouse_pos)
 	var posicao_final = tile_map.map_to_local(coord_grid)
-
-	# --- VERIFICAÇÃO FÍSICA DE ESPAÇO OCUPADO ---
+	
 	var mundo_fisico = get_world_2d().direct_space_state
 	var parametros = PhysicsPointQueryParameters2D.new()
 	parametros.position = posicao_final
@@ -421,38 +469,47 @@ func tentar_construir(facing_right: bool = true):
 	parametros.collide_with_areas = false
 	
 	var resultado = mundo_fisico.intersect_point(parametros)
-	
 	var dados_tile = tile_map.get_cell_tile_data(coord_grid)
 	
-	# Só constrói se tile permitir E não tiver corpo físico no local
 	if dados_tile and dados_tile.get_custom_data("pode_construir") and resultado.size() == 0:
 		ouro_atual -= custo_da_tropa_selecionada
 		atualizar_interface_ouro()
 		
 		var nova_tropa = tropa_para_construir.instantiate()
 		nova_tropa.position = posicao_final
-		nova_tropa.scale.x = abs(nova_tropa.scale.x) if facing_right else -abs(nova_tropa.scale.x)
+		
+		if facing_right:
+			nova_tropa.scale.x = abs(nova_tropa.scale.x)
+		else:
+			nova_tropa.scale.x = -abs(nova_tropa.scale.x)
 		
 		if dados_tile and nova_tropa.get_script() != null:
 			var eh_vertical: bool = bool(dados_tile.get_custom_data("alcance_vertical"))
 			var script_path := str(nova_tropa.get_script().resource_path)
+			
 			if script_path.find("tropa_arqueiro.gd") != -1:
 				_aplicar_orientacao_alcance(nova_tropa, eh_vertical)
-				
+		
 		add_child(nova_tropa)
 	else:
-		print("Construção bloqueada (Terreno inválido ou ocupado)!")
+		print("Construção bloqueada!")
 
 func _aplicar_orientacao_alcance(node_aliado: Node2D, eh_vertical: bool):
 	if node_aliado.has_node("AreaAlcance"):
-		var area: Node2D = node_aliado.get_node_or_null("AreaAlcance") as Node2D
+		var area: Node2D = node_aliado.get_node_or_null("AreaAlcance")
+		
 		if area:
-			area.rotation_degrees = 90 if eh_vertical else 0
+			if eh_vertical:
+				area.rotation_degrees = 90
+			else:
+				area.rotation_degrees = 0
 
 func cancelar_construcao():
 	tropa_para_construir = null
 	custo_da_tropa_selecionada = 0
+	
 	if sprite_preview != null:
 		sprite_preview.queue_free()
 		sprite_preview = null
+		
 	segurando_esq = false
