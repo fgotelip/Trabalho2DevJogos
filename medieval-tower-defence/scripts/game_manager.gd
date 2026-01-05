@@ -11,7 +11,7 @@ extends Node2D
 var custo_guerreiro: int = 100
 var custo_arqueiro: int = 150
 var custo_monge: int = 350
-var ouro_atual: int = 400 
+var ouro_atual: int = 1000 
 
 var tropa_guerreiro_cena = preload("res://Scene/tropa_barreira.tscn") 
 var tropa_arqueiro_cena = preload("res://Scene/tropa_arqueiro.tscn")

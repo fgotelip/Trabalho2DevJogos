@@ -8,7 +8,7 @@
 size = Vector2(80, 80)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_glams"]
-size = Vector2(500, 150)
+size = Vector2(500, 136)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wv00g"]
 bg_color = Color(1, 0, 0, 1)
@@ -166,7 +166,7 @@ script = ExtResource("1_glams")
 velocidade = 40.0
 vida = 30
 dano = 15
-valor_em_ouro = 25
+valor_em_ouro = 50
 intervalo_ataque = 1.5
 
 [node name="Sprite2D" type="Sprite2D" parent="." groups=["inimigos"]]
@@ -181,7 +181,7 @@ collision_layer = 0
 collision_mask = 12
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectorAtaque" groups=["inimigos"]]
-position = Vector2(30, 0)
+position = Vector2(30, -2)
 shape = SubResource("RectangleShape2D_glams")
 
 [node name="TimerAtaque" type="Timer" parent="."]

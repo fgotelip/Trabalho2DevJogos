@@ -13,7 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://bxsfcl5g5ygru" path="res://Arts/Castle.png" id="11_s6rbu"]
 [ext_resource type="Texture2D" uid="uid://3fsjm0amjw74" path="res://Arts/House2.png" id="12_1u1ew"]
 [ext_resource type="Script" uid="uid://bn7qxwir4rwa7" path="res://scripts/camera_controller.gd" id="13_ug01c"]
-[ext_resource type="PackedScene" uid="uid://c76aqes6r0pex" path="res://Scene/character_body_2d.tscn" id="15_djn62"]
+[ext_resource type="PackedScene" uid="uid://cgrvuytowtd3l" path="res://Scene/inimigo_guerreiro.tscn" id="15_djn62"]
 [ext_resource type="PackedScene" uid="uid://c5tp5rq03ajxr" path="res://Scene/inimigo_arqueiro.tscn" id="16_5pd2f"]
 [ext_resource type="PackedScene" uid="uid://q8u0eq34ft3b" path="res://Scene/base.tscn" id="16_q6wtm"]
 [ext_resource type="PackedScene" uid="uid://c7a4lfbosomwt" path="res://Scene/tropa_arqueiro.tscn" id="17_jako7"]
